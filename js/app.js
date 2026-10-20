@@ -158,3 +158,5 @@ populateChoices();setupTimes();render();if(!data.length&&!config.subjects.length
 window.addEventListener('load',()=>{checkAppVersion();setInterval(checkAppVersion,15*60*1000)});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAppVersion()});
 window.addEventListener('online',checkAppVersion);
+// Esponi esplicitamente l'azione al pulsante HTML anche in Safari.
+window.openForm=openForm;
