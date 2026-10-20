@@ -1,0 +1,94 @@
+
+:root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#172b45;background:#f5f8fc}*{box-sizing:border-box}body{margin:0}main{max-width:600px;margin:auto;padding:22px 16px 105px}header{display:flex;justify-content:space-between;align-items:center}h1{font-size:29px;margin:5px 0}h2{font-size:18px;margin:24px 0 12px}.muted{color:#718198;font-size:13px}.summary{display:flex;gap:10px;margin:18px 0}.summary>div{flex:1;background:white;border:1px solid #e6edf5;border-radius:15px;padding:15px}.summary strong{display:block;font-size:24px;color:#2176d2}.card{display:flex;gap:12px;background:white;border:1px solid #e5ebf3;border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 2px 8px #12223a07}.time{font-size:13px;font-weight:700;color:#2672be;min-width:76px}.content{flex:1;min-width:0}.content strong{display:block;font-size:16px}.meta{color:#66758b;font-size:13px;margin-top:5px}.note{font-size:13px;color:#4c607b;margin-top:7px}.actions{display:flex;gap:6px;align-items:start}.small{font-size:12px;padding:7px 9px}.btn,button{cursor:pointer;border:0;border-radius:11px;padding:11px 14px;background:#eaf2fc;color:#2468ad;font-weight:650}.primary{background:#2879d6;color:white}.danger{background:#fff0f0;color:#b43a3a}.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;justify-content:center;padding:10px 4px max(12px,env(safe-area-inset-bottom))}.nav button{background:none;color:#758398;flex:1;max-width:130px;padding:8px 2px;font-size:12px}.nav button.active{color:#2879d6;background:#eaf2fc}.view{display:none}.view.active{display:block}label{display:block;font-size:13px;font-weight:650;margin:12px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #d6e0ec;border-radius:11px;font:inherit;background:white;color:#1b2f47}textarea{resize:vertical}form{background:white;padding:16px;border-radius:16px;border:1px solid #e5ebf3}.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}.empty{padding:20px;background:white;border-radius:14px;color:#758398}.hint{font-size:12px;color:#718198;line-height:1.5}.weekday{margin-top:22px;font-size:15px;font-weight:750}.chip{display:inline-block;background:#eaf2fc;border-radius:8px;padding:5px 8px;color:#3474ba;font-size:12px;margin-top:6px}
+/* Agenda IPIA 3.0 — card tematiche e badge classe */
+:root{background:#f6f7fb;color:#1e293b}
+body{background:linear-gradient(180deg,#eaf0fa 0,#f6f7fb 270px);min-height:100vh}
+main{padding-top:26px}header h1{font-weight:800;letter-spacing:-.7px}
+.summary>div{box-shadow:0 5px 18px #172b4510;border-color:#e8edf5}
+.summary strong{color:#213f73}.card{border:1px solid #e2e8f0;border-radius:19px;box-shadow:0 5px 18px #172b4510;align-items:flex-start;position:relative;overflow:hidden}
+.card.lesson-lte{background:#fff0b8;border-color:#efd77d}
+.card.lesson-ttimd{background:#e2f4e7;border-color:#b9e4c6}
+.card.school-event{background:#f0e9fb;border-color:#dcd0f5}
+.card.lesson-lte .time{color:#7b5700}.card.lesson-ttimd .time{color:#237046}.card.school-event .time{color:#6b48a0}
+.card .content strong{font-size:17px;font-weight:800;letter-spacing:-.2px}
+.card .meta{color:#415168;font-weight:600}.card .note{color:#42546a}
+.card .small{background:#ffffffad;color:#34445a;min-width:34px}.card .danger{color:#a73743}
+.card::before{content:'';position:absolute;top:0;bottom:0;left:0;width:5px;background:#aebccc}
+.card.personal-lesson::before{background:#708cb2}.card.lesson-lte::before{background:#e5a900}.card.lesson-ttimd::before{background:#29955c}.card.school-event::before{background:#9267d1}
+/* Evidenziazione impegni odierni */
+.card.school-event.event-today{border-width:2px;border-style:solid}.card.school-event.event-today::before{background:var(--today-border,#e8a43a)}
+.today-label{display:inline-block;border-radius:8px;background:#fff5dd;color:#785005;font-size:11px;font-weight:750;letter-spacing:.3px;padding:3px 7px;margin-bottom:6px;border:1px solid #f3ddad}
+.event-color-settings{margin-top:16px}.event-color-setting{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px}.event-color-setting label{margin:0;flex:1}.event-color-setting input[type=color]{width:62px;height:44px;flex:none;padding:3px}
+.primary{background:#214f9a}.nav button.active{background:#e6edfa;color:#214f9a}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #739ee4;outline-offset:2px}
+.class-badge{display:inline-block;padding:4px 8px;border-radius:9px;font-size:12px;font-weight:800;white-space:nowrap;margin-right:5px;vertical-align:middle}
+.class-2a{background:#dcebff;color:#2059a5;border:1px solid #a7c8f8}
+.class-4a{background:#ffe0d5;color:#a34224;border:1px solid #f5b7a1}
+.class-4b{background:#f0deff;color:#743a9e;border:1px solid #d9b8f2}
+
+#endPicker, #endChoices button {font-weight:400 !important;}
+
+/* Personalizzazione 3.9 */
+.setting-group{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:12px;margin:12px 0}.setting-line{display:flex;gap:8px;align-items:center;margin:8px 0}.setting-line input[type=color]{width:44px;height:42px;padding:3px;flex:none}.setting-line input[type=text]{min-width:0;flex:1}.setting-line button{flex:none}.setting-group h3{margin:0 0 8px;font-size:15px}.setting-group .hint{margin:6px 0}.setting-add{display:flex;gap:8px;margin-top:12px}.setting-add input{flex:1;min-width:0}.setting-add button{flex:none}
+.setup-message{border:1px solid #bdd9f8;background:#edf6ff;border-radius:12px;padding:12px;margin:12px 0;color:#254d7c}.setup-message p{font-size:13px;margin:7px 0 0}.setting-empty{font-size:12px;color:#77869b;padding:7px 0}/* Vista tabella settimanale compatta 4.0 */
+.week-scroll{width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;border-radius:14px;border:1px solid #dce5f0;background:#fff}
+.week-table{border-collapse:separate;border-spacing:3px;table-layout:fixed;width:max-content;min-width:0;font-size:14px}
+.week-table th{background:#eaf0f9;color:#2d4766;font-weight:700;padding:6px 3px;white-space:nowrap}
+.week-table th:not(:first-child),.week-table td:not(:first-child){width:90px;min-width:90px;max-width:90px;overflow-wrap:anywhere}
+.week-table th:first-child,.week-table td:first-child{position:sticky;left:0;z-index:1;background:#f1f5fb;width:57px;min-width:57px;max-width:57px;text-align:center}
+.week-table th:first-child{z-index:2}
+.week-table td{padding:2px;vertical-align:middle;background:#f6f8fb;border-radius:5px;height:76px;text-align:center}
+.week-time{font-size:12px;line-height:1.2;color:#52637b;font-variant-numeric:tabular-nums}
+.week-cell{display:flex;flex-direction:column;gap:2px}
+.week-lesson{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:1px solid transparent;border-radius:5px;padding:5px 2px;min-height:70px;color:#28374c;font-weight:400;cursor:pointer;white-space:normal}
+.week-lesson.lte{background:#fff0b8;border-color:#efd77d}.week-lesson.ttimd{background:#e2f4e7;border-color:#b9e4c6}
+.week-subject{font-size:16px;font-weight:650;line-height:1.15;overflow-wrap:anywhere}.week-class{font-size:14px;padding:2px 3px;border-radius:4px;white-space:normal;overflow-wrap:anywhere;font-weight:600;max-width:100%;line-height:1.1}
+.week-class.class-2a{background:#dcebff;color:#2059a5}.week-class.class-4a{background:#ffe0d5;color:#a34224}.week-class.class-4b{background:#f0deff;color:#743a9e}
+.week-empty{color:#b5becb}.week-table td.week-spanning{vertical-align:middle}.week-table td.week-spanning .week-lesson{min-height:var(--lesson-span-height,80px)}.week-room{display:none}/* Aula e note restano accessibili toccando la lezione */
+
+.update-notice{position:fixed;left:12px;right:12px;bottom:88px;z-index:50;max-width:570px;margin:auto;padding:12px 14px;border:1px solid #bad4fa;border-radius:14px;background:#fff;box-shadow:0 7px 30px #1b305330;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.update-notice[hidden]{display:none}.update-notice p{margin:4px 0 0;font-size:12px;color:#52657b}.update-notice button{flex:none;background:#214f9a;color:#fff}
+
+/* Agenda IPIA 4.7 — tema Naturale; colori personali di lezioni e impegni preservati */
+:root{background:#f8f6f1;color:#34382f}
+body{background:linear-gradient(180deg,#f0f2e9 0,#f8f6f1 285px);min-height:100vh}
+header h1{color:#343f35;letter-spacing:-.6px}
+h2{color:#35483c;letter-spacing:-.25px}
+.muted,.hint{color:#737e72}
+.summary>div{background:#fffefa;border-color:#e7e8dc;border-radius:21px;box-shadow:0 5px 18px #475a3810}
+.summary strong{color:#66806b}
+.card{border-radius:22px;box-shadow:0 7px 22px #4b563313;border-color:#e1e6d9}
+.card.lesson-lte{background:#f6e5be;border-color:#e9d5a4}
+.card.lesson-ttimd{background:#dce9d4;border-color:#c8ddc2}
+.card.school-event{background:#e7dfec;border-color:#d7cadd}
+.card.lesson-lte::before{background:#cda55c}.card.lesson-ttimd::before{background:#83a886}
+.card.school-event::before{background:#9d83ae}
+.card.lesson-lte .time{color:#80632d}.card.lesson-ttimd .time{color:#46734e}
+.card.school-event .time{color:#745a84}
+.card .meta{color:#4d594e}.card .note{color:#58635a}
+.card .small{background:#ffffffbd;color:#48594b}
+.btn,button{background:#e9eee5;color:#536e59;border-radius:13px}
+.primary{background:#758b70;color:#fff}
+.nav{background:#fffefa;border-top-color:#e5e8df}
+.nav button{color:#7b897c;border-radius:13px}
+.nav button.active{background:#e6eee3;color:#506e54}
+.chip{background:#e6eee3;color:#506e54}
+.setting-group,form,.empty{background:#fffefa;border-color:#e5e8dd;border-radius:19px;box-shadow:0 3px 13px #4b56330b}
+input,select,textarea{border-color:#d8dfd3;background:#fffefa;color:#344238}
+button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa68a}
+.week-scroll{border-color:#e0e5d8;background:#fffefa;border-radius:17px}
+.week-table th{background:#e7ede2;color:#48614d}
+.week-table th:first-child,.week-table td:first-child{background:#edf0e8}
+.week-table td{background:#f5f6ef}
+.week-lesson{border-radius:9px}
+.week-lesson.lte{background:#f6e5be;border-color:#e9d5a4}
+.week-lesson.ttimd{background:#dce9d4;border-color:#c8ddc2}
+.week-time{color:#637263}
+/* I colori personalizzati sono applicati via stile inline e restano prioritari. */
+
+/* Agenda IPIA 4.8 — evidenziazione del giorno e icone coordinate */
+.week-table th.week-current-day{background:#e2ebdd;color:#52785a;position:relative;box-shadow:inset 0 -4px 0 #729777}
+.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#879488}
+.nav button.active{color:#557b5d;background:#e5ede1}
+.nav-icon{display:block;width:23px;height:23px;flex:none}
+.nav button span{font-size:12px;line-height:1.15}
