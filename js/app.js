@@ -127,7 +127,7 @@ function importData(e){
   }catch(err){alert('Backup non valido o impossibile da ripristinare: '+err.message)}
  };r.readAsText(f);
 }
-const APP_VERSION='4.9.2';
+const APP_VERSION='4.9.3';
 let latestAppVersion=null;
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
