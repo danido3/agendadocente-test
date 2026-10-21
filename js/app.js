@@ -43,7 +43,30 @@ const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.ge
  return Number.isFinite(minutes)&&minutes>0?minutes/60:0;
 }
 function formatHours(hours){return Number(hours.toFixed(2)).toLocaleString('it-IT',{maximumFractionDigits:2})}
-function render(){const now=new Date(),dow=now.getDay(),date=localDate();$('todayDate').textContent=now.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});const lessons=data.filter(x=>x.type==='lesson'&&!closureFor(date)&&Number(x.day)===dow);const currentTime=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');const extras=data.filter(x=>x.type==='event'&&x.date&&(x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime))).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));$('lc').textContent=formatHours(lessons.reduce((total,x)=>total+lessonHours(x),0));$('ec').textContent=extras.length;$('todayLessons').innerHTML=closureFor(date)?'<div class="closure-banner">📅 '+safe(closureFor(date))+' — lezioni sospese</div>':list(lessons);$('todayExtras').innerHTML=extras.length?extras.map(x=>`<div class="muted" style="margin-top:18px">${safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</div>${card(x,x.date===date)}`).join(''):'<div class="empty">Nessun impegno in programma.</div>';$('weekList').innerHTML=renderWeekTable();const all=data.filter(x=>x.type==='event');
+function renderCurrentActivity(now,lessons){
+ const el=$('currentActivity');if(!el)return;
+ const date=localDate(),minutes=now.getHours()*60+now.getMinutes();
+ const toMinutes=t=>{const [h,m]=String(t).split(':').map(Number);return h*60+m};
+ const events=data.filter(x=>x.type==='event'&&x.date===date);
+ const activities=[...lessons,...events].filter(x=>x.start&&x.end).sort((a,b)=>xTime(a)-xTime(b));
+ function xTime(x){return toMinutes(x.start)}
+ const ongoing=activities.filter(x=>toMinutes(x.start)<=minutes&&minutes<toMinutes(x.end));
+ const next=activities.find(x=>toMinutes(x.start)>minutes);
+ const meta=x=>[x.classroom,x.room].filter(Boolean).map(safe).join(' · ');
+ const label=x=>x.type==='lesson'?'Lezione':'Impegno';
+ const title=x=>safe(x.subject)+(x.classroom?' — '+safe(x.classroom):'');
+ let html='';
+ if(ongoing.length){
+  html+=ongoing.map(x=>{
+   const start=toMinutes(x.start),end=toMinutes(x.end),progress=Math.max(0,Math.min(100,Math.round((minutes-start)/(end-start)*100)));
+   return '<div class="activity-current"><div class="activity-kicker">◷ '+label(x)+' in corso</div><div class="activity-flex"><div><strong>'+title(x)+'</strong>'+(x.room?'<div class="activity-meta">'+safe(x.room)+'</div>':'')+'</div><span class="activity-end">Fino alle '+safe(x.end)+'</span></div><div class="activity-progress"><div style="width:'+progress+'%"></div></div><div class="activity-meta">'+(end-minutes)+' minuti rimanenti</div></div>'
+  }).join('');
+ }else html='<div class="activity-idle">Nessuna attività in corso</div>';
+ if(next)html+='<div class="activity-next"><div class="activity-kicker">Prossima attività</div><div class="activity-flex"><strong>'+title(next)+'</strong><strong>'+safe(next.start)+'</strong></div><div class="activity-meta">'+label(next)+(next.room?' · '+safe(next.room):'')+'</div></div>';
+ else html+='<div class="activity-next activity-meta">Nessun’altra attività prevista per oggi.</div>';
+ el.innerHTML=html;
+}
+function render(){const now=new Date(),dow=now.getDay(),date=localDate();$('todayDate').textContent=now.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});const lessons=data.filter(x=>x.type==='lesson'&&!closureFor(date)&&Number(x.day)===dow);const currentTime=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');const extras=data.filter(x=>x.type==='event'&&x.date&&(x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime))).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));$('lc').textContent=formatHours(lessons.reduce((total,x)=>total+lessonHours(x),0));$('ec').textContent=extras.length;renderCurrentActivity(now,lessons);$('todayLessons').innerHTML=closureFor(date)?'<div class="closure-banner">📅 '+safe(closureFor(date))+' — lezioni sospese</div>':list(lessons);$('todayExtras').innerHTML=extras.length?extras.map(x=>`<div class="muted" style="margin-top:18px">${safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</div>${card(x,x.date===date)}`).join(''):'<div class="empty">Nessun impegno in programma.</div>';$('weekList').innerHTML=renderWeekTable();const all=data.filter(x=>x.type==='event');
 const eventIsUpcoming=x=>x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime);
 const upcoming=all.filter(eventIsUpcoming).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
 const history=all.filter(x=>!eventIsUpcoming(x)).sort((a,b)=>b.date.localeCompare(a.date)||b.start.localeCompare(a.start));
@@ -178,7 +201,7 @@ function importData(e){
   }catch(err){alert('Backup non valido o impossibile da ripristinare: '+err.message)}
  };r.readAsText(f);
 }
-const APP_VERSION='4.9.15';
+const APP_VERSION='4.9.16';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
@@ -209,5 +232,7 @@ populateChoices();setupTimes();render();renderClosures();if(!data.length&&!confi
 window.addEventListener('load',()=>{checkAppVersion();setInterval(checkAppVersion,15*60*1000)});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAppVersion()});
 window.addEventListener('online',checkAppVersion);
+setInterval(()=>{if(!document.hidden&&document.querySelector('#today.view.active'))renderCurrentActivity(new Date(),data.filter(x=>x.type==='lesson'&&!closureFor(localDate())&&Number(x.day)===new Date().getDay()))},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
 // Esponi esplicitamente l'azione al pulsante HTML anche in Safari.
 window.openForm=openForm;
