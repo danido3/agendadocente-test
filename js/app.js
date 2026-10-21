@@ -68,7 +68,7 @@ function renderMonth(){
  for(let n=1;n<=length;n++){
   const entries=entriesForMonthDay(n),lesson=entries.some(x=>x.type==='lesson'),event=entries.some(x=>x.type==='event');
   const isToday=y===today.getFullYear()&&m===today.getMonth()&&n===today.getDate();
-  html+='<button type="button" class="month-day'+(n===monthDay?' selected':'')+(isToday?' is-today':'')+'" onclick="selectMonthDay('+n+')" aria-label="Giorno '+n+'"><span>'+n+'</span><span class="month-dots">'+(lesson?'<i class="lesson-dot"></i>':'')+(event?'<i class="event-dot"></i>':'')+'</span></button>';
+  html+='<button type="button" class="month-day'+(n===monthDay?' selected':'')+(isToday?' is-today':'')+'" onclick="selectMonthDay('+n+')" aria-label="Giorno '+n+'"><span>'+n+'</span><span class="month-dots">'+(lesson?'<i class="lesson-dot"></i>':'')+(event?'<i class="event-dot" style="background:'+config.eventStyle.background+'"></i>':'')+'</span></button>';
  }
  grid.innerHTML=html;
  const d=new Date(y,m,monthDay);
@@ -155,7 +155,7 @@ function importData(e){
   }catch(err){alert('Backup non valido o impossibile da ripristinare: '+err.message)}
  };r.readAsText(f);
 }
-const APP_VERSION='4.9.12';
+const APP_VERSION='4.9.13';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
