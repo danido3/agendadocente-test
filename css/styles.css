@@ -110,3 +110,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 #monthDayTitle{text-transform:capitalize;font-size:17px;margin:12px 0}
 #monthEntries .card{margin-bottom:10px}
 .nav button{min-width:0;padding-left:2px;padding-right:2px}.nav button span{font-size:11px}
+
+/* Festività e sospensioni */
+.month-day.is-closed{background:#f9e9e5;border-color:#e9c7be}
+.closed-mark{font-size:15px;font-weight:800;line-height:9px;color:#bd6b5e}
+.closure-banner{background:#f9e9e5;color:#874c44;padding:12px 14px;border-radius:11px;margin:10px 0;font-weight:600}
+#closureForm{padding:14px;background:#f6f8f3;border:1px solid #e2e8df;border-radius:12px;margin-bottom:15px}
+#closureForm input{width:100%;box-sizing:border-box}
+.closure-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #e5e8e2}
+.closure-row span{min-width:0}.closure-row small{display:block;color:#748074;margin-top:3px}
