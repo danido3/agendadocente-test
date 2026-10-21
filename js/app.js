@@ -207,12 +207,13 @@ const SAFETY_BACKUP_KEY='agenda-ipia-pre-restore-v1';
 function backupSnapshot(){
  return {format:'agenda-ipia-backup',schema:1,exportedAt:new Date().toISOString(),appVersion:APP_VERSION,entries:JSON.parse(JSON.stringify(data)),personalization:JSON.parse(JSON.stringify(config)),closures:JSON.parse(JSON.stringify(closures))};
 }
+function persistedBackupSnapshot(){const x=backupSnapshot();try{x.entries=JSON.parse(localStorage.getItem(KEY)||'[]');x.personalization=JSON.parse(localStorage.getItem(CONFIG_KEY)||'null')||x.personalization;x.closures=JSON.parse(localStorage.getItem(CLOSURES_KEY)||'[]')}catch(e){}return x}
 function readAutoBackups(){try{const list=JSON.parse(localStorage.getItem(AUTO_BACKUP_KEY)||'[]');return Array.isArray(list)?list.filter(x=>x&&x.snapshot&&typeof x.day==='string').slice(0,7):[]}catch(e){return []}}
 function beforeAgendaChange(){
  try{
   const day=localDate(),list=readAutoBackups();
   if(list.some(x=>x.day===day))return;
-  list.unshift({day,snapshot:backupSnapshot()});
+  list.unshift({day,snapshot:persistedBackupSnapshot()});
   localStorage.setItem(AUTO_BACKUP_KEY,JSON.stringify(list.slice(0,7)));
   renderBackupList();
  }catch(e){console.warn('Backup automatico non disponibile:',e);const el=$('backupStatus');if(el)el.textContent='Attenzione: impossibile creare la copia locale. Esporta un backup JSON.'}
