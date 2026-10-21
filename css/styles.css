@@ -92,3 +92,21 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 .nav button.active{color:#557b5d;background:#e5ede1}
 .nav-icon{display:block;width:23px;height:23px;flex:none}
 .nav button span{font-size:12px;line-height:1.15}
+
+/* Calendario mensile */
+.month-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:10px 0 16px}
+.month-head h2{margin:0;text-align:center;text-transform:capitalize;font-size:21px}
+.month-head button{font-size:26px;min-width:44px}
+.month-legend{text-align:center;font-size:12px;color:#748775;margin-bottom:14px}
+.month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-bottom:22px}
+.month-weekday{text-align:center;font-size:12px;font-weight:700;color:#6b7d70;padding:7px 0}
+.month-empty{min-height:53px}
+.month-day{min-width:0;min-height:53px;padding:7px 2px;background:#fffefa;border:1px solid #e2e7dc;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:15px;color:#344238}
+.month-day.selected{background:#e5eee2;border:2px solid #758b70}
+.month-day.is-today span:first-child{font-weight:800;text-decoration:underline}
+.month-dots{display:flex;gap:4px;min-height:7px}
+.month-dots i{width:7px;height:7px;border-radius:50%;display:block}
+.lesson-dot{background:#758b70}.event-dot{background:#d6a452}
+#monthDayTitle{text-transform:capitalize;font-size:17px;margin:12px 0}
+#monthEntries .card{margin-bottom:10px}
+.nav button{min-width:0;padding-left:2px;padding-right:2px}.nav button span{font-size:11px}
