@@ -47,8 +47,8 @@ function render(){const now=new Date(),dow=now.getDay(),date=localDate();$('toda
 const eventIsUpcoming=x=>x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime);
 const upcoming=all.filter(eventIsUpcoming).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
 const history=all.filter(x=>!eventIsUpcoming(x)).sort((a,b)=>b.date.localeCompare(a.date)||b.start.localeCompare(a.start));
-const eventMarkup=x=>`<div class="muted" style="margin-top:18px">${safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</div>${card(x)}`;
-$('commitmentList').innerHTML=all.length?'<h3>In programma ('+upcoming.length+')</h3>'+(upcoming.length?upcoming.map(eventMarkup).join(''):'<div class="empty">Nessun impegno futuro.</div>')+(history.length?'<h3 style="margin-top:28px">Impegni passati ('+history.length+')</h3>'+history.map(eventMarkup).join(''):''):'<div class="empty">Nessun impegno inserito.</div>'};function renderWeekTable(){
+const renderEventGroups=items=>{let previousDate='';return items.map(x=>{const label=x.date!==previousDate?'<div class="muted" style="margin-top:18px">'+safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))+'</div>':'';previousDate=x.date;return label+card(x)}).join('')};
+$('commitmentList').innerHTML=all.length?'<h3>In programma ('+upcoming.length+')</h3>'+(upcoming.length?renderEventGroups(upcoming):'<div class="empty">Nessun impegno futuro.</div>')+(history.length?'<h3 style="margin-top:28px">Impegni passati ('+history.length+')</h3>'+renderEventGroups(history):''):'<div class="empty">Nessun impegno inserito.</div>'};function renderWeekTable(){
  const lessons=data.filter(x=>x.type==='lesson');
  if(!lessons.length)return '<div class="empty">Nessuna lezione settimanale inserita.</div>';
  const weekdays=lessons.some(x=>Number(x.day)===6)?[1,2,3,4,5,6]:[1,2,3,4,5];
@@ -127,7 +127,7 @@ function importData(e){
   }catch(err){alert('Backup non valido o impossibile da ripristinare: '+err.message)}
  };r.readAsText(f);
 }
-const APP_VERSION='4.9.10';
+const APP_VERSION='4.9.11';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
