@@ -3,7 +3,7 @@ const CONFIG_KEY='agenda-ipia-config-v1';
 const defaultConfig={subjects:[],commitments:[],classes:[],rooms:[],notes:[],eventStyle:{background:'#f0e9fb',todayBorder:'#e8a43a'}};
 function normalizeConfig(v){const result=JSON.parse(JSON.stringify(defaultConfig));if(!v||typeof v!=='object')return result;for(const k of ['subjects','commitments','classes','rooms','notes'])if(Array.isArray(v[k])){const seen=new Set();result[k]=v[k].filter(x=>{const n=typeof x==='string'?x:x?.name;const valid=typeof n==='string'&&n.trim().length>0&&!seen.has(n.trim().toLowerCase());if(valid)seen.add(n.trim().toLowerCase());return valid}).slice(0,80).map(x=>k==='subjects'||k==='classes'?{name:String(x.name).slice(0,60),color:/^#[0-9a-f]{6}$/i.test(x.color)?x.color:(k==='subjects'?'#eaf2fc':'#dcebff')}:String(x).slice(0,100))}if(v.eventStyle&&typeof v.eventStyle==='object'){for(const k of ['background','todayBorder'])if(typeof v.eventStyle[k]==='string'&&/^#[0-9a-f]{6}$/i.test(v.eventStyle[k]))result.eventStyle[k]=v.eventStyle[k]}return result}
 let config=normalizeConfig(null);try{config=normalizeConfig(JSON.parse(localStorage.getItem(CONFIG_KEY)||'null'))}catch(e){}
-function saveConfig(){localStorage.setItem(CONFIG_KEY,JSON.stringify(config));populateChoices();renderSettings();render()}
+function saveConfig(){beforeAgendaChange();localStorage.setItem(CONFIG_KEY,JSON.stringify(config));populateChoices();renderSettings();render()}
 function findColor(group,name,fallback){return config[group].find(x=>x.name===name)?.color||fallback}
 function inkFor(bg){if(!/^#[0-9a-f]{6}$/i.test(bg))return '#1e293b';const rgb=[1,3,5].map(i=>parseInt(bg.slice(i,i+2),16)/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722>.19?'#253348':'#ffffff'}
 function styleColor(bg){return 'background:'+bg+';color:'+inkFor(bg)+';border-color:'+bg}
@@ -18,7 +18,7 @@ function changeSetting(group,index,field,value){const arr=config[group];if(!arr|
   // Mantieni intatti gli impegni scolastici, anche con nomi coincidenti.
   const fieldName=group==='subjects'?'subject':'classroom';
   const updated=data.map(entry=>entry.type==='lesson'&&entry[fieldName]===previousName?{...entry,[fieldName]:value}:entry);
-  try{localStorage.setItem(KEY,JSON.stringify(updated))}catch(e){alert('Impossibile salvare le lezioni aggiornate. Riprova dopo aver liberato spazio.');renderSettings();return}
+  try{beforeAgendaChange();localStorage.setItem(KEY,JSON.stringify(updated))}catch(e){alert('Impossibile salvare le lezioni aggiornate. Riprova dopo aver liberato spazio.');renderSettings();return}
   data=updated;
  }
  arr[index].name=value;
@@ -35,9 +35,9 @@ if(!localStorage.getItem(CONFIG_KEY)&&data.some(x=>x.type==='lesson')){
  const classes=[...new Set(data.filter(x=>x.type==='lesson').map(x=>x.classroom).filter(Boolean))];
  config.subjects=subjects.map(name=>({name,color:previousSubjectColors[name]||'#eaf2fc'}));
  config.classes=classes.map(name=>({name,color:previousClassColors[name]||'#dcebff'}));
- localStorage.setItem(CONFIG_KEY,JSON.stringify(config));
+ beforeAgendaChange();localStorage.setItem(CONFIG_KEY,JSON.stringify(config));
 }
-const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function save(){localStorage.setItem(KEY,JSON.stringify(data));render()};function navigate(page){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));$('heading').textContent=({today:'Oggi',week:'Settimana',commitments:'Impegni',month:'Mese',settings:'Impostazioni',editor:'Modifica agenda'})[page];window.scrollTo(0,0);if(page==='settings')renderSettings();if(page!=='editor')render()};function card(x,highlightToday=false){const todayEvent=x.type==='event'&&highlightToday;const style=x.type==='lesson'?styleColor(findColor('subjects',x.subject,'#eaf2fc')):'background:'+config.eventStyle.background+';border-color:'+(todayEvent?config.eventStyle.todayBorder:config.eventStyle.background)+';--today-border:'+config.eventStyle.todayBorder;return `<div class="card ${x.type==='lesson'?'personal-lesson':'school-event'}${todayEvent?' event-today':''}" style="${style}"><div class="time">${safe(x.start)}<br>${safe(x.end)}</div><div class="content">${todayEvent?'<span class="today-label">OGGI</span>':''}<strong>${safe(x.subject)}</strong>${x.classroom||x.room?`<div class="meta">${x.classroom?(x.type==='lesson'?'<span class="class-badge" style="'+styleColor(findColor('classes',x.classroom,'#eaf2fc'))+'">'+safe(x.classroom)+'</span>':'Classe '+safe(x.classroom)):''}${x.classroom&&x.room?' · ':''}${x.room?safe(x.room):''}</div>`:''}${x.note?`<div class="note">✎ ${safe(x.note)}</div>`:''}</div><div class="actions"><button class="small" onclick="editEntry('${x.id}')" aria-label="Modifica">✎</button><button class="small" onclick="duplicateEntry('${x.id}')" aria-label="Duplica" title="Duplica">⧉</button><button class="small danger" onclick="removeEntry('${x.id}')" aria-label="Elimina">×</button></div></div>`};function list(a){return a.length?a.sort((x,y)=>x.start.localeCompare(y.start)).map(card).join(''):'<div class="empty">Nessuna voce inserita.</div>'};function lessonHours(entry){
+const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function save(){beforeAgendaChange();localStorage.setItem(KEY,JSON.stringify(data));render()};function navigate(page){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));$('heading').textContent=({today:'Oggi',week:'Settimana',commitments:'Impegni',month:'Mese',settings:'Impostazioni',editor:'Modifica agenda'})[page];window.scrollTo(0,0);if(page==='settings'){renderSettings();renderBackupList();}if(page!=='editor')render()};function card(x,highlightToday=false){const todayEvent=x.type==='event'&&highlightToday;const style=x.type==='lesson'?styleColor(findColor('subjects',x.subject,'#eaf2fc')):'background:'+config.eventStyle.background+';border-color:'+(todayEvent?config.eventStyle.todayBorder:config.eventStyle.background)+';--today-border:'+config.eventStyle.todayBorder;return `<div class="card ${x.type==='lesson'?'personal-lesson':'school-event'}${todayEvent?' event-today':''}" style="${style}"><div class="time">${safe(x.start)}<br>${safe(x.end)}</div><div class="content">${todayEvent?'<span class="today-label">OGGI</span>':''}<strong>${safe(x.subject)}</strong>${x.classroom||x.room?`<div class="meta">${x.classroom?(x.type==='lesson'?'<span class="class-badge" style="'+styleColor(findColor('classes',x.classroom,'#eaf2fc'))+'">'+safe(x.classroom)+'</span>':'Classe '+safe(x.classroom)):''}${x.classroom&&x.room?' · ':''}${x.room?safe(x.room):''}</div>`:''}${x.note?`<div class="note">✎ ${safe(x.note)}</div>`:''}</div><div class="actions"><button class="small" onclick="editEntry('${x.id}')" aria-label="Modifica">✎</button><button class="small" onclick="duplicateEntry('${x.id}')" aria-label="Duplica" title="Duplica">⧉</button><button class="small danger" onclick="removeEntry('${x.id}')" aria-label="Elimina">×</button></div></div>`};function list(a){return a.length?a.sort((x,y)=>x.start.localeCompare(y.start)).map(card).join(''):'<div class="empty">Nessuna voce inserita.</div>'};function lessonHours(entry){
  const toMinutes=t=>{const m=/^(\d{2}):(\d{2})$/.exec(t||'');return m?Number(m[1])*60+Number(m[2]):NaN};
  const minutes=toMinutes(entry.end)-toMinutes(entry.start);
  return Number.isFinite(minutes)&&minutes>0?minutes/60:0;
@@ -83,7 +83,7 @@ let closures=[];try{closures=normalizeClosures(JSON.parse(localStorage.getItem(C
 function easterDate(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k+7)%7,m=Math.floor((a+11*h+22*l)/451),p=Math.floor((h+l-7*m+114)/31),day=(h+l-7*m+114)%31+1;return new Date(y,p-1,day)}
 function holidayFor(iso){const [y,m,d]=iso.split('-').map(Number);const fixed={'01-01':'Capodanno','01-06':'Epifania','04-25':'Festa della Liberazione','05-01':'Festa del Lavoro','06-02':'Festa della Repubblica','08-15':'Ferragosto','11-01':'Ognissanti','12-08':'Immacolata Concezione','12-25':'Natale','12-26':'Santo Stefano'};const fixedName=fixed[iso.slice(5)];if(fixedName)return fixedName;const easter=easterDate(y);const isoDate=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(iso===isoDate(easter))return 'Pasqua';easter.setDate(easter.getDate()+1);return iso===isoDate(easter)?'Lunedì dell’Angelo':null}
 function closureFor(iso){const manual=closures.find(x=>x.start<=iso&&x.end>=iso);return manual?manual.name:holidayFor(iso)}
-function saveClosures(){localStorage.setItem(CLOSURES_KEY,JSON.stringify(closures));render();renderClosures()}
+function saveClosures(){beforeAgendaChange();localStorage.setItem(CLOSURES_KEY,JSON.stringify(closures));render();renderClosures()}
 function addClosure(e){e.preventDefault();const name=$('closureName').value.trim(),start=$('closureStart').value,end=$('closureEnd').value;if(!name||!validDate(start)||!validDate(end)||end<start){alert('Controlla il motivo e le date.');return}closures.push({name:name.slice(0,100),start,end});closures.sort((a,b)=>a.start.localeCompare(b.start));saveClosures();$('closureForm').reset()}
 function deleteClosure(i){if(!confirm('Eliminare questa sospensione?'))return;closures.splice(i,1);saveClosures()}
 function renderClosures(){const el=$('closureList');if(!el)return;el.innerHTML=closures.length?closures.map((x,i)=>'<div class="closure-row"><span><strong>'+safe(x.name)+'</strong><small>'+safe(x.start)+(x.end!==x.start?' → '+safe(x.end):'')+'</small></span><button type="button" class="danger small" onclick="deleteClosure('+i+')">Elimina</button></div>').join(''):'<p class="hint">Nessuna sospensione personalizzata.</p>'}
@@ -194,14 +194,56 @@ function importData(e){
    if(!confirm(msg))return;
    // Conserva gli stessi identificatori localStorage delle versioni precedenti.
    const oldEntries=localStorage.getItem(KEY),oldConfig=localStorage.getItem(CONFIG_KEY),oldClosures=localStorage.getItem(CLOSURES_KEY);
-   try{localStorage.setItem(KEY,JSON.stringify(entries));if(newConfig)localStorage.setItem(CONFIG_KEY,JSON.stringify(normalizeConfig(newConfig)));localStorage.setItem(CLOSURES_KEY,JSON.stringify(newClosures||[]))}
+   try{localStorage.setItem(SAFETY_BACKUP_KEY,JSON.stringify(backupSnapshot()));localStorage.setItem(KEY,JSON.stringify(entries));if(newConfig)localStorage.setItem(CONFIG_KEY,JSON.stringify(normalizeConfig(newConfig)));localStorage.setItem(CLOSURES_KEY,JSON.stringify(newClosures||[]))}
    catch(writeError){if(oldEntries===null)localStorage.removeItem(KEY);else localStorage.setItem(KEY,oldEntries);if(oldConfig===null)localStorage.removeItem(CONFIG_KEY);else localStorage.setItem(CONFIG_KEY,oldConfig);if(oldClosures===null)localStorage.removeItem(CLOSURES_KEY);else localStorage.setItem(CLOSURES_KEY,oldClosures);throw writeError}
    data=entries;if(newConfig)config=normalizeConfig(newConfig);closures=newClosures||[];
    populateChoices();renderSettings();renderClosures();render();navigate('today');alert('Backup ripristinato correttamente.');
   }catch(err){alert('Backup non valido o impossibile da ripristinare: '+err.message)}
  };r.readAsText(f);
 }
-const APP_VERSION='4.9.16';
+
+const AUTO_BACKUP_KEY='agenda-ipia-auto-backups-v1';
+const SAFETY_BACKUP_KEY='agenda-ipia-pre-restore-v1';
+function backupSnapshot(){
+ return {format:'agenda-ipia-backup',schema:1,exportedAt:new Date().toISOString(),appVersion:APP_VERSION,entries:JSON.parse(JSON.stringify(data)),personalization:JSON.parse(JSON.stringify(config)),closures:JSON.parse(JSON.stringify(closures))};
+}
+function readAutoBackups(){try{const list=JSON.parse(localStorage.getItem(AUTO_BACKUP_KEY)||'[]');return Array.isArray(list)?list.filter(x=>x&&x.snapshot&&typeof x.day==='string').slice(0,7):[]}catch(e){return []}}
+function beforeAgendaChange(){
+ try{
+  const day=localDate(),list=readAutoBackups();
+  if(list.some(x=>x.day===day))return;
+  list.unshift({day,snapshot:backupSnapshot()});
+  localStorage.setItem(AUTO_BACKUP_KEY,JSON.stringify(list.slice(0,7)));
+  renderBackupList();
+ }catch(e){console.warn('Backup automatico non disponibile:',e);const el=$('backupStatus');if(el)el.textContent='Attenzione: impossibile creare la copia locale. Esporta un backup JSON.'}
+}
+function renderBackupList(){
+ const el=$('backupList');if(!el)return;
+ const list=readAutoBackups(),safety=localStorage.getItem(SAFETY_BACKUP_KEY);
+ el.innerHTML=(safety?'<div class="closure-row"><span><strong>Copia prima dell’ultimo ripristino</strong><small>Ripristino di sicurezza</small></span><button type="button" onclick="restoreLocalBackup(-1)">Ripristina</button></div>':'')+
+ list.map((x,i)=>'<div class="closure-row"><span><strong>'+safe(x.day)+'</strong><small>Copia automatica prima delle modifiche</small></span><button type="button" onclick="restoreLocalBackup('+i+')">Ripristina</button></div>').join('')+
+ (!list.length&&!safety?'<p class="hint">Nessuna copia ancora disponibile. La prima verrà creata quando modifichi i dati.</p>':'');
+ const status=$('backupStatus');if(status&&!status.textContent.startsWith('Attenzione'))status.textContent=list.length+' copie automatiche conservate (massimo 7).';
+}
+function restoreLocalBackup(index){
+ try{
+  const snapshot=index===-1?JSON.parse(localStorage.getItem(SAFETY_BACKUP_KEY)||'null'):readAutoBackups()[index]?.snapshot;
+  if(!snapshot||snapshot.format!=='agenda-ipia-backup'||snapshot.schema!==1||!validEntries(snapshot.entries)||!validPersonalization(snapshot.personalization)||!Array.isArray(snapshot.closures)||normalizeClosures(snapshot.closures).length!==snapshot.closures.length)throw Error('Copia non valida');
+  if(!confirm('Ripristinare questa copia? I dati attuali verranno sostituiti. Verrà prima creata una copia di sicurezza.'))return;
+  const current=backupSnapshot(),old=[localStorage.getItem(KEY),localStorage.getItem(CONFIG_KEY),localStorage.getItem(CLOSURES_KEY)];
+  // La copia di sicurezza va salvata prima di modificare qualsiasi dato.
+  localStorage.setItem(SAFETY_BACKUP_KEY,JSON.stringify(current));
+  try{
+   localStorage.setItem(KEY,JSON.stringify(snapshot.entries));
+   localStorage.setItem(CONFIG_KEY,JSON.stringify(normalizeConfig(snapshot.personalization)));
+   localStorage.setItem(CLOSURES_KEY,JSON.stringify(normalizeClosures(snapshot.closures)));
+  }catch(e){[KEY,CONFIG_KEY,CLOSURES_KEY].forEach((k,i)=>old[i]===null?localStorage.removeItem(k):localStorage.setItem(k,old[i]));throw e}
+  data=snapshot.entries;config=normalizeConfig(snapshot.personalization);closures=normalizeClosures(snapshot.closures);
+  populateChoices();renderSettings();renderClosures();render();renderBackupList();alert('Copia locale ripristinata.');
+ }catch(e){alert('Impossibile ripristinare la copia: '+e.message)}
+}
+
+const APP_VERSION='4.9.17';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
