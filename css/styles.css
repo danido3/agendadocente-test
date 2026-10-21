@@ -119,3 +119,15 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 #closureForm input{width:100%;box-sizing:border-box}
 .closure-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #e5e8e2}
 .closure-row span{min-width:0}.closure-row small{display:block;color:#748074;margin-top:3px}
+
+/* Attività in corso e prossima attività */
+.current-activity{display:grid;gap:10px;margin:14px 0 18px}
+.activity-current{background:#e2ebdd;border:1px solid #cbdcc6;border-radius:14px;padding:15px;color:#294e35}
+.activity-next{background:#fffefa;border:1px solid #e2e7dc;border-radius:13px;padding:13px;color:#35473a}
+.activity-idle{background:#f4f6f0;border-radius:12px;padding:12px 14px;color:#697c6c}
+.activity-kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:9px;color:#52785a}
+.activity-flex{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.activity-flex strong{font-size:16px}.activity-end{font-size:12px;white-space:nowrap}
+.activity-meta{font-size:12px;color:#607566;margin-top:7px}
+.activity-progress{height:7px;background:#c6d9c2;border-radius:10px;overflow:hidden;margin-top:13px}
+.activity-progress>div{height:100%;background:#52785a;border-radius:10px}
