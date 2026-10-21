@@ -37,7 +37,7 @@ if(!localStorage.getItem(CONFIG_KEY)&&data.some(x=>x.type==='lesson')){
  config.classes=classes.map(name=>({name,color:previousClassColors[name]||'#dcebff'}));
  localStorage.setItem(CONFIG_KEY,JSON.stringify(config));
 }
-const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function save(){localStorage.setItem(KEY,JSON.stringify(data));render()};function navigate(page){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));$('heading').textContent=({today:'Oggi',week:'Settimana',commitments:'Impegni',settings:'Impostazioni',editor:'Modifica agenda'})[page];window.scrollTo(0,0);if(page==='settings')renderSettings();if(page!=='editor')render()};function card(x,highlightToday=false){const todayEvent=x.type==='event'&&highlightToday;const style=x.type==='lesson'?styleColor(findColor('subjects',x.subject,'#eaf2fc')):'background:'+config.eventStyle.background+';border-color:'+(todayEvent?config.eventStyle.todayBorder:config.eventStyle.background)+';--today-border:'+config.eventStyle.todayBorder;return `<div class="card ${x.type==='lesson'?'personal-lesson':'school-event'}${todayEvent?' event-today':''}" style="${style}"><div class="time">${safe(x.start)}<br>${safe(x.end)}</div><div class="content">${todayEvent?'<span class="today-label">OGGI</span>':''}<strong>${safe(x.subject)}</strong>${x.classroom||x.room?`<div class="meta">${x.classroom?(x.type==='lesson'?'<span class="class-badge" style="'+styleColor(findColor('classes',x.classroom,'#eaf2fc'))+'">'+safe(x.classroom)+'</span>':'Classe '+safe(x.classroom)):''}${x.classroom&&x.room?' · ':''}${x.room?safe(x.room):''}</div>`:''}${x.note?`<div class="note">✎ ${safe(x.note)}</div>`:''}</div><div class="actions"><button class="small" onclick="editEntry('${x.id}')" aria-label="Modifica">✎</button><button class="small" onclick="duplicateEntry('${x.id}')" aria-label="Duplica" title="Duplica">⧉</button><button class="small danger" onclick="removeEntry('${x.id}')" aria-label="Elimina">×</button></div></div>`};function list(a){return a.length?a.sort((x,y)=>x.start.localeCompare(y.start)).map(card).join(''):'<div class="empty">Nessuna voce inserita.</div>'};function lessonHours(entry){
+const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function save(){localStorage.setItem(KEY,JSON.stringify(data));render()};function navigate(page){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));$('heading').textContent=({today:'Oggi',week:'Settimana',commitments:'Impegni',month:'Mese',settings:'Impostazioni',editor:'Modifica agenda'})[page];window.scrollTo(0,0);if(page==='settings')renderSettings();if(page!=='editor')render()};function card(x,highlightToday=false){const todayEvent=x.type==='event'&&highlightToday;const style=x.type==='lesson'?styleColor(findColor('subjects',x.subject,'#eaf2fc')):'background:'+config.eventStyle.background+';border-color:'+(todayEvent?config.eventStyle.todayBorder:config.eventStyle.background)+';--today-border:'+config.eventStyle.todayBorder;return `<div class="card ${x.type==='lesson'?'personal-lesson':'school-event'}${todayEvent?' event-today':''}" style="${style}"><div class="time">${safe(x.start)}<br>${safe(x.end)}</div><div class="content">${todayEvent?'<span class="today-label">OGGI</span>':''}<strong>${safe(x.subject)}</strong>${x.classroom||x.room?`<div class="meta">${x.classroom?(x.type==='lesson'?'<span class="class-badge" style="'+styleColor(findColor('classes',x.classroom,'#eaf2fc'))+'">'+safe(x.classroom)+'</span>':'Classe '+safe(x.classroom)):''}${x.classroom&&x.room?' · ':''}${x.room?safe(x.room):''}</div>`:''}${x.note?`<div class="note">✎ ${safe(x.note)}</div>`:''}</div><div class="actions"><button class="small" onclick="editEntry('${x.id}')" aria-label="Modifica">✎</button><button class="small" onclick="duplicateEntry('${x.id}')" aria-label="Duplica" title="Duplica">⧉</button><button class="small danger" onclick="removeEntry('${x.id}')" aria-label="Elimina">×</button></div></div>`};function list(a){return a.length?a.sort((x,y)=>x.start.localeCompare(y.start)).map(card).join(''):'<div class="empty">Nessuna voce inserita.</div>'};function lessonHours(entry){
  const toMinutes=t=>{const m=/^(\d{2}):(\d{2})$/.exec(t||'');return m?Number(m[1])*60+Number(m[2]):NaN};
  const minutes=toMinutes(entry.end)-toMinutes(entry.start);
  return Number.isFinite(minutes)&&minutes>0?minutes/60:0;
@@ -48,7 +48,35 @@ const eventIsUpcoming=x=>x.date>date||(x.date===date&&(x.end||x.start||'00:00')>
 const upcoming=all.filter(eventIsUpcoming).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
 const history=all.filter(x=>!eventIsUpcoming(x)).sort((a,b)=>b.date.localeCompare(a.date)||b.start.localeCompare(a.start));
 const renderEventGroups=items=>{let previousDate='';return items.map(x=>{const label=x.date!==previousDate?'<div class="muted" style="margin-top:18px">'+safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))+'</div>':'';previousDate=x.date;return label+card(x)}).join('')};
-$('commitmentList').innerHTML=all.length?'<h3>In programma ('+upcoming.length+')</h3>'+(upcoming.length?renderEventGroups(upcoming):'<div class="empty">Nessun impegno futuro.</div>')+(history.length?'<h3 style="margin-top:28px">Impegni passati ('+history.length+')</h3>'+renderEventGroups(history):''):'<div class="empty">Nessun impegno inserito.</div>'};function renderWeekTable(){
+$('commitmentList').innerHTML=all.length?'<h3>In programma ('+upcoming.length+')</h3>'+(upcoming.length?renderEventGroups(upcoming):'<div class="empty">Nessun impegno futuro.</div>')+(history.length?'<h3 style="margin-top:28px">Impegni passati ('+history.length+')</h3>'+renderEventGroups(history):''):'<div class="empty">Nessun impegno inserito.</div>';renderMonth()};
+let monthShown=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+let monthDay=new Date().getDate();
+function shiftMonth(n){monthShown=new Date(monthShown.getFullYear(),monthShown.getMonth()+n,1);monthDay=1;renderMonth()}
+function selectMonthDay(n){monthDay=n;renderMonth()}
+function entriesForMonthDay(n){
+ const d=new Date(monthShown.getFullYear(),monthShown.getMonth(),n);
+ const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+ return data.filter(x=>(x.type==='lesson'&&Number(x.day)===d.getDay())||(x.type==='event'&&x.date===iso)).sort((a,b)=>(a.start||'').localeCompare(b.start||''));
+}
+function renderMonth(){
+ const grid=$('monthGrid');if(!grid)return;
+ const y=monthShown.getFullYear(),m=monthShown.getMonth(),length=new Date(y,m+1,0).getDate(),offset=(new Date(y,m,1).getDay()+6)%7;
+ const today=new Date();
+ $('monthTitle').textContent=monthShown.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+ let html=['L','M','M','G','V','S','D'].map(x=>'<div class="month-weekday">'+x+'</div>').join('');
+ for(let i=0;i<offset;i++)html+='<div class="month-empty"></div>';
+ for(let n=1;n<=length;n++){
+  const entries=entriesForMonthDay(n),lesson=entries.some(x=>x.type==='lesson'),event=entries.some(x=>x.type==='event');
+  const isToday=y===today.getFullYear()&&m===today.getMonth()&&n===today.getDate();
+  html+='<button type="button" class="month-day'+(n===monthDay?' selected':'')+(isToday?' is-today':'')+'" onclick="selectMonthDay('+n+')" aria-label="Giorno '+n+'"><span>'+n+'</span><span class="month-dots">'+(lesson?'<i class="lesson-dot"></i>':'')+(event?'<i class="event-dot"></i>':'')+'</span></button>';
+ }
+ grid.innerHTML=html;
+ const d=new Date(y,m,monthDay);
+ $('monthDayTitle').textContent=d.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
+ const entries=entriesForMonthDay(monthDay);
+ $('monthEntries').innerHTML=entries.length?entries.map(x=>card(x)).join(''):'<div class="empty">Nessuna attività prevista per questo giorno.</div>';
+}
+function renderWeekTable(){
  const lessons=data.filter(x=>x.type==='lesson');
  if(!lessons.length)return '<div class="empty">Nessuna lezione settimanale inserita.</div>';
  const weekdays=lessons.some(x=>Number(x.day)===6)?[1,2,3,4,5,6]:[1,2,3,4,5];
@@ -127,7 +155,7 @@ function importData(e){
   }catch(err){alert('Backup non valido o impossibile da ripristinare: '+err.message)}
  };r.readAsText(f);
 }
-const APP_VERSION='4.9.11';
+const APP_VERSION='4.9.12';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
