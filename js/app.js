@@ -65,7 +65,7 @@ function renderMonth(){
  const grid=$('monthGrid');if(!grid)return;
  const y=monthShown.getFullYear(),m=monthShown.getMonth(),length=new Date(y,m+1,0).getDate(),offset=(new Date(y,m,1).getDay()+6)%7;
  const today=new Date();
- $('monthTitle').textContent=monthShown.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+ $('monthTitle').textContent=monthShown.toLocaleDateString('it-IT',{month:'long',year:'numeric'});const legendEventDot=$('monthLegendEventDot');if(legendEventDot)legendEventDot.style.backgroundColor=config.eventStyle.background;
  let html=['L','M','M','G','V','S','D'].map(x=>'<div class="month-weekday">'+x+'</div>').join('');
  for(let i=0;i<offset;i++)html+='<div class="month-empty"></div>';
  for(let n=1;n<=length;n++){
@@ -211,7 +211,7 @@ function restoreLocalBackup(index){
  }catch(e){alert('Impossibile ripristinare la copia: '+e.message)}
 }
 
-const APP_VERSION='4.9.22';
+const APP_VERSION='4.9.23';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
