@@ -88,7 +88,7 @@ function renderWeekTable(){
  const extra=lessons.map(x=>x.start).filter(t=>t&&!starts.includes(t));
  const slots=[...new Set([...starts,...extra])].sort();
  const currentWeekday=new Date().getDay();
- const head='<thead><tr><th scope="col">Ora</th>'+weekdays.map(d=>'<th scope="col"'+(d===currentWeekday?' class="week-current-day" aria-current="date"':'')+'>'+safe(days[d])+'</th>').join('')+'</tr></thead>';
+ const head='<thead><tr><th scope="col">Ora</th>'+weekdays.map(d=>'<th scope="col"'+(d===currentWeekday?' class="week-current-day week-today-top" aria-current="date"':'')+'>'+safe(days[d])+'</th>').join('')+'</tr></thead>';
  // Una cella che copre più fasce orarie usa rowspan; le righe successive
  // non creano un'altra cella nello stesso giorno.
  const occupied=Object.fromEntries(weekdays.map(d=>[d,new Set()]));
@@ -104,7 +104,7 @@ function renderWeekTable(){
    const cells=weekdays.map(day=>{
      if(occupied[day].has(i))return '';
      const matches=lessons.filter(x=>Number(x.day)===day&&x.start===start).sort((a,b)=>xEnd(a).localeCompare(xEnd(b)));
-     if(!matches.length)return '<td><span class="week-empty">—</span></td>';
+     if(!matches.length)return '<td'+(day===currentWeekday?' class="week-today-cell'+(i===slots.length-1?' week-today-bottom':'')+'"':'')+'><span class="week-empty">—</span></td>';
      // Non unire righe quando nello stesso giorno inizia un'altra lezione:
      // in caso di sovrapposizioni, tutte le lezioni restano accessibili.
      let span=1;
@@ -117,7 +117,7 @@ function renderWeekTable(){
        }
      }
      for(let j=i+1;j<i+span;j++)occupied[day].add(j);
-     return '<td'+(span>1?' rowspan="'+span+'" class="week-spanning" style="--lesson-span-height:'+(76*span-6)+'px"':'')+'><div class="week-cell">'+matches.map(lessonButton).join('')+'</div></td>';
+     return '<td'+(span>1?' rowspan="'+span+'"':'')+' class="'+(span>1?'week-spanning ':'')+(day===currentWeekday?'week-today-cell'+(i+span===slots.length?' week-today-bottom':''):'')+'"'+(span>1?' style="--lesson-span-height:'+(76*span-6)+'px"':'')+'><div class="week-cell">'+matches.map(lessonButton).join('')+'</div></td>';
    }).join('');
    return '<tr><td>'+label+'</td>'+cells+'</tr>';
  }).join('');
@@ -211,7 +211,7 @@ function restoreLocalBackup(index){
  }catch(e){alert('Impossibile ripristinare la copia: '+e.message)}
 }
 
-const APP_VERSION='4.9.27';
+const APP_VERSION='4.9.28';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
