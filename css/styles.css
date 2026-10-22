@@ -148,3 +148,18 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 .week-table th.week-today-top,.week-table td.week-today-cell{box-shadow:inset 2px 0 #d2a04f,inset -2px 0 #d2a04f}
 .week-table th.week-today-top{border-top:2px solid #d2a04f;border-radius:9px 9px 0 0;box-shadow:inset 2px 0 #d2a04f,inset -2px 0 #d2a04f,inset 0 -4px 0 #729777}
 .week-table td.week-today-bottom{border-bottom:2px solid #d2a04f;border-radius:0 0 9px 9px}
+
+/* 4.9.32: pannelli ordinati delle impostazioni */
+#settings .settings-panel{margin:12px 0;border:1px solid #dce4eb;border-radius:13px;background:#fff;overflow:hidden}
+#settings .settings-panel>summary{display:flex;align-items:center;gap:12px;padding:16px 13px;cursor:pointer;list-style:none}
+#settings .settings-panel>summary::-webkit-details-marker,#settings .settings-subpanel>summary::-webkit-details-marker{display:none}
+#settings .settings-panel>summary::after,#settings .settings-subpanel>summary::after{content:'⌄';margin-left:auto;font-size:20px;color:#64748b;transition:transform .2s}
+#settings details[open]>summary::after{transform:rotate(180deg)}
+#settings .settings-symbol{display:grid;place-items:center;width:40px;height:40px;flex:none;background:#f0f4f8;border-radius:10px;font-size:21px}
+#settings .settings-panel>summary strong{display:block;font-size:16px}
+#settings .settings-panel>summary small{display:block;color:#64748b;font-size:12px;line-height:1.4;margin-top:3px}
+#settings .settings-panel-body{padding:12px 14px 18px;border-top:1px solid #edf0f3}
+#settings .settings-subpanel{margin:9px 0;border:1px solid #e1e7ed;border-radius:9px;overflow:hidden}
+#settings .settings-subpanel>summary{display:flex;align-items:center;gap:10px;cursor:pointer;padding:14px 12px;font-weight:600;list-style:none}
+#settings .settings-subpanel .settings-panel-body{padding:12px}
+#settings .settings-panel-body button{margin-top:5px;margin-bottom:5px}
