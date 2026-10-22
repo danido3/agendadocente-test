@@ -164,3 +164,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
  .week-compact .week-class{font-size:9px;line-height:1.12;padding:2px 1px;max-width:100%;white-space:normal;overflow-wrap:normal;word-break:normal}
  .week-compact .week-table td.week-spanning .week-lesson{min-height:var(--lesson-span-height,80px)}
 }
+
+/* 4.9.30: MAT a capo e materie più leggibili, senza allargare la settimana */
+@media(max-width:600px){
+ .week-compact .week-subject{font-size:12px;line-height:1.15;font-weight:700}
+ .week-compact .week-class{font-size:9px;line-height:1.16}
+ .week-compact .week-class-break{display:block;height:0}
+}
