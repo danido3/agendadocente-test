@@ -179,3 +179,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 /* TEST 4.9.36 */
 #autoSyncToggle[hidden]{display:none!important}
 #autoSyncStatus{overflow-wrap:anywhere}
+
+/* TEST 4.9.37 */
+#resolveCloudConflicts[hidden]{display:none!important}
+#cloudConflictPanel pre{font-size:12px;max-height:220px;overflow:auto}
+#cloudConflictPanel .setting-group{margin:10px 0;padding:12px;border:1px solid #dce4d7;border-radius:12px}
