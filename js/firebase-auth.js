@@ -2,7 +2,7 @@
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 const app=initializeApp({
-  apiKey:'AIzaSyBhGhWO4S1kwncXXSb6k-hfgM99V7lQ9w',
+  apiKey:'AIzaSyBhGhWO4S1kwkncXXSb6k-hfgM99V7lQ9w',
   authDomain:'agenda-ipia.firebaseapp.com',
   projectId:'agenda-ipia',
   storageBucket:'agenda-ipia.firebasestorage.app',
