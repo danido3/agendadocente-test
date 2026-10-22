@@ -134,3 +134,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 
 /* 4.9.22: andamento temporale nella scheda dell'attività in corso */
 .inline-activity{margin-top:10px;font-size:12px;font-weight:700;color:#2e7450}.inline-progress{height:6px;border-radius:999px;background:#dce9df;overflow:hidden;margin-top:6px}.inline-progress>div{height:100%;background:#3b9569;border-radius:999px;transition:width .4s ease}
+
+/* 4.9.24: pallini della legenda mese coerenti con il calendario */
+.month-legend{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.month-legend span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.month-legend i.lesson-dot,.month-legend i.event-dot{display:inline-block;width:9px;height:9px;min-width:9px;min-height:9px;border-radius:50%;flex:none}
