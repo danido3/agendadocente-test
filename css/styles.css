@@ -148,26 +148,3 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 .week-table th.week-today-top,.week-table td.week-today-cell{box-shadow:inset 2px 0 #d2a04f,inset -2px 0 #d2a04f}
 .week-table th.week-today-top{border-top:2px solid #d2a04f;border-radius:9px 9px 0 0;box-shadow:inset 2px 0 #d2a04f,inset -2px 0 #d2a04f,inset 0 -4px 0 #729777}
 .week-table td.week-today-bottom{border-bottom:2px solid #d2a04f;border-radius:0 0 9px 9px}
-
-/* 4.9.29: settimana compatta su smartphone, sei giorni e nomi classi completi */
-@media(max-width:600px){
- .week-scroll.week-compact{width:100%;max-width:100%;overflow-x:hidden}
- .week-compact .week-table{width:100%;min-width:0;max-width:100%;table-layout:fixed;border-spacing:1px;font-size:10px}
- .week-compact .week-table th:first-child,.week-compact .week-table td:first-child{width:41px;min-width:41px;max-width:41px;left:0;padding:2px 0}
- .week-compact .week-table th:not(:first-child),.week-compact .week-table td:not(:first-child){width:auto;min-width:0;max-width:none}
- .week-compact .week-table th{padding:6px 0;font-size:10px}
- .week-compact .week-table td{padding:1px;height:64px}
- .week-compact .week-time{font-size:9px;line-height:1.2}
- .week-compact .week-cell{gap:1px}
- .week-compact .week-lesson{min-height:59px;padding:3px 0;gap:3px}
- .week-compact .week-subject{font-size:10px;line-height:1.1;overflow-wrap:anywhere}
- .week-compact .week-class{font-size:9px;line-height:1.12;padding:2px 1px;max-width:100%;white-space:normal;overflow-wrap:normal;word-break:normal}
- .week-compact .week-table td.week-spanning .week-lesson{min-height:var(--lesson-span-height,80px)}
-}
-
-/* 4.9.30: MAT a capo e materie più leggibili, senza allargare la settimana */
-@media(max-width:600px){
- .week-compact .week-subject{font-size:12px;line-height:1.15;font-weight:700}
- .week-compact .week-class{font-size:9px;line-height:1.16}
- .week-compact .week-class-break{display:block;height:0}
-}
