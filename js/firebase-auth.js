@@ -1,4 +1,4 @@
-// Agenda IPIA TEST 4.9.36: accesso Google, senza sincronizzazione dei dati
+// Agenda IPIA TEST 4.9.37: accesso Google, senza sincronizzazione dei dati
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 const app=initializeApp({
@@ -20,7 +20,7 @@ const autoButton=document.getElementById('autoSyncToggle'),autoStatus=document.g
 let autoEnabled=false,autoStop=null,autoUser=null,autoRevision=0,autoHash=null,autoDirty=false,autoBusy=false,autoTimer=null,autoConflict=false;
 function fingerprint(s){return JSON.stringify([s.entries,s.personalization,s.closures])}
 function autoMessage(s){autoStatus.textContent=s}
-function autoUI(){autoButton.hidden=!currentUser;autoButton.textContent=autoEnabled?'Disattiva sincronizzazione automatica':'Attiva sincronizzazione automatica';cloudUpload.disabled=autoEnabled;cloudDownload.disabled=autoEnabled}
+function autoUI(){autoButton.hidden=!currentUser;resolveButton.hidden=!currentUser||autoEnabled;autoButton.textContent=autoEnabled?'Disattiva sincronizzazione automatica':'Attiva sincronizzazione automatica';cloudUpload.disabled=autoEnabled;cloudDownload.disabled=autoEnabled}
 function stopAuto(reason){if(autoStop){autoStop();autoStop=null}if(autoTimer)clearTimeout(autoTimer);autoTimer=null;autoEnabled=false;autoBusy=false;autoDirty=false;autoConflict=false;autoUser=null;autoHash=null;autoUI();if(reason)autoMessage(reason)}
 let currentUser=null;const cloudPath=()=>doc(db,'users',currentUser.uid,'data','agenda');
 function cloudMessage(t){cloudStatus.textContent=t}
@@ -75,6 +75,7 @@ cloudUpload.addEventListener('click',()=>cloudAction('upload'));
 cloudDownload.addEventListener('click',()=>cloudAction('download'));
 
 function conflict(){
+ resolveButton.hidden=false;
  autoConflict=true;autoEnabled=false;
  if(autoStop){autoStop();autoStop=null}
  if(autoTimer)clearTimeout(autoTimer);
@@ -106,7 +107,7 @@ async function startAuto(interactive){
    window.agendaCloudImport(payload.snapshot);
   }
   autoUser=uid;autoRevision=Number(payload.revision)||0;autoHash=remoteHash;
-  autoDirty=false;autoConflict=false;autoEnabled=true;localStorage.setItem('agenda-ipia-autosync-uid',uid);autoUI();
+  autoDirty=false;autoConflict=false;autoEnabled=true;resolveButton.hidden=true;resolvePanel.replaceChildren();localStorage.setItem('agenda-ipia-autosync-uid',uid);autoUI();
   autoMessage('Sincronizzazione automatica attiva · dati aggiornati.');
   autoStop=onSnapshot(doc(db,'users',uid,'data','agenda'),{includeMetadataChanges:true},snap=>{
    if(!autoEnabled||autoUser!==uid||!snap.exists()||snap.metadata.fromCache||snap.metadata.hasPendingWrites)return;
@@ -169,3 +170,67 @@ autoButton.addEventListener('click',()=>{
  if(autoEnabled){localStorage.removeItem('agenda-ipia-autosync-uid');stopAuto('Sincronizzazione automatica disattivata.');}
  else startAuto(true);
 });
+
+const resolveButton=document.getElementById('resolveCloudConflicts');
+const resolvePanel=document.getElementById('cloudConflictPanel');
+let proposedMerge=null;
+function stable(x){return JSON.stringify(x)}
+function rowChoice(title,localValue,cloudValue){
+ const wrap=document.createElement('div');wrap.className='setting-group';
+ const name=document.createElement('strong');name.textContent=title;wrap.append(name);
+ const select=document.createElement('select');
+ for(const [value,label] of [['local','Conserva versione di questo dispositivo'],['cloud','Conserva versione cloud']]){
+  const opt=document.createElement('option');opt.value=value;opt.textContent=label;select.append(opt);
+ }
+ select.setAttribute('aria-label','Versione da conservare per '+title);
+ wrap.append(select);
+ const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Confronta i contenuti';
+ const pre=document.createElement('pre');pre.style.whiteSpace='pre-wrap';pre.style.overflowWrap='anywhere';pre.textContent='DISPOSITIVO:\n'+JSON.stringify(localValue,null,2)+'\nCLOUD:\n'+JSON.stringify(cloudValue,null,2);
+ details.append(summary,pre);wrap.append(details);resolvePanel.append(wrap);
+ return ()=>select.value==='local'?localValue:cloudValue;
+}
+async function inspectConflict(){
+ if(!currentUser||autoEnabled)return;
+ resolvePanel.replaceChildren();resolveButton.disabled=true;
+ try{
+  const uid=currentUser.uid,remote=await getDocFromServer(doc(db,'users',uid,'data','agenda'));
+  if(!remote.exists())throw Error('Non ci sono dati cloud da confrontare');
+  const payload=remote.data(),cloud=payload.snapshot,local=window.agendaCloudExport();
+  if(!cloud||cloud.schema!==1||!Array.isArray(cloud.entries)||!Array.isArray(local.entries))throw Error('Archivio non valido');
+  const localMap=new Map(local.entries.map(x=>[x.id,x])),cloudMap=new Map(cloud.entries.map(x=>[x.id,x]));
+  const ids=new Set([...localMap.keys(),...cloudMap.keys()]),choices=new Map();
+  for(const id of ids){
+   const a=localMap.get(id),b=cloudMap.get(id);
+   if(a&&b&&stable(a)===stable(b)){choices.set(id,()=>a);continue}
+   if(!a||!b){choices.set(id,()=>a||b);continue}
+   choices.set(id,rowChoice('Voce: '+(a.subject||b.subject||id),a,b));
+  }
+  const cfg=stable(local.personalization)===stable(cloud.personalization)?()=>local.personalization:rowChoice('Personalizzazioni',local.personalization,cloud.personalization);
+  const cls=stable(local.closures)===stable(cloud.closures)?()=>local.closures:rowChoice('Sospensioni scolastiche',local.closures,cloud.closures);
+  const info=document.createElement('p');info.className='hint';info.textContent='Le voci presenti su un solo dispositivo vengono conservate entrambe. Per le voci con lo stesso ID ma contenuti diversi scegli quale mantenere. Le eliminazioni non vengono applicate automaticamente.';
+  resolvePanel.prepend(info);
+  const commit=document.createElement('button');commit.type='button';commit.textContent='Conferma unione e salva nel cloud';
+  commit.addEventListener('click',async()=>{
+   if(!confirm('Unire le voci selezionate e aggiornare sia il cloud sia questo dispositivo? Prima verrà creato un backup locale.'))return;
+   commit.disabled=true;
+   try{
+    const merged={...local,entries:[...choices.values()].map(fn=>fn()),personalization:cfg(),closures:cls()};
+    // Verifica il risultato prima di qualsiasi scrittura.
+    if(new Blob([JSON.stringify(merged)]).size>800000)throw Error('Archivio troppo grande per Firestore');
+    const ref=doc(db,'users',uid,'data','agenda');
+    await runTransaction(db,async tx=>{
+     const latest=await tx.get(ref),v=latest.exists()?latest.data():null;
+     if(!v||stable(v.snapshot)!==stable(cloud)||Number(v.revision||0)!==Number(payload.revision||0))throw Error('Il cloud è cambiato durante il confronto. Ripeti il confronto prima di salvare.');
+     tx.set(ref,{snapshot:merged,schema:1,revision:Number(v.revision||0)+1,updatedAt:serverTimestamp()});
+    });
+    window.agendaCloudImport(merged);
+    resolvePanel.replaceChildren();autoMessage('Unione completata. Controlla i dati, poi attiva la sincronizzazione su questo dispositivo.');
+   }catch(e){autoMessage('Unione non completata: '+e.message)}
+   finally{commit.disabled=false}
+  });
+  resolvePanel.append(commit);
+  autoMessage('Confronto pronto: scegli la versione da conservare per ogni voce differente.');
+ }catch(e){autoMessage('Confronto non disponibile: '+(e.code||e.message))}
+ finally{resolveButton.disabled=false}
+}
+resolveButton.addEventListener('click',inspectConflict);
