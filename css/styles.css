@@ -167,3 +167,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 /* 4.9.33: titoli e contatori impegni come nella pagina Oggi */
 #commitments .today-section-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 #commitments .today-section-count{display:inline-flex;align-items:center;justify-content:center;font:inherit;color:inherit;font-weight:inherit;line-height:1}
+
+/* TEST 4.9.34: pulsanti account Google */
+#firebaseLogin[hidden],#firebaseLogout[hidden]{display:none!important}
+#firebaseAuthStatus{overflow-wrap:anywhere}
