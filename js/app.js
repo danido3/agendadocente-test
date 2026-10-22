@@ -39,7 +39,7 @@ const eventIsUpcoming=x=>x.date>date||(x.date===date&&(x.end||x.start||'00:00')>
 const upcoming=all.filter(eventIsUpcoming).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
 const history=all.filter(x=>!eventIsUpcoming(x)).sort((a,b)=>b.date.localeCompare(a.date)||b.start.localeCompare(a.start));
 const renderEventGroups=items=>{let previousDate='';return items.map(x=>{const label=x.date!==previousDate?'<div class="muted" style="margin-top:18px">'+safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))+'</div>':'';previousDate=x.date;return label+card(x)}).join('')};
-$('commitmentList').innerHTML=all.length?'<h3>In programma ('+upcoming.length+')</h3>'+(upcoming.length?renderEventGroups(upcoming):'<div class="empty">Nessun impegno futuro.</div>')+(history.length?'<h3 style="margin-top:28px">Impegni passati ('+history.length+')</h3>'+renderEventGroups(history):''):'<div class="empty">Nessun impegno inserito.</div>';renderMonth()};
+$('commitmentList').innerHTML=all.length?'<h2 class="today-section-heading">In programma'+(upcoming.length?' <span class="today-section-count">· '+upcoming.length+'</span>':'')+'</h2>'+(upcoming.length?renderEventGroups(upcoming):'<div class="empty">Nessun impegno futuro.</div>')+(history.length?'<h2 class="today-section-heading" style="margin-top:28px">Impegni passati <span class="today-section-count">· '+history.length+'</span></h2>'+renderEventGroups(history):''):'<div class="empty">Nessun impegno inserito.</div>';renderMonth()};
 let monthShown=new Date(new Date().getFullYear(),new Date().getMonth(),1);
 let monthDay=new Date().getDate();
 function shiftMonth(n){monthShown=new Date(monthShown.getFullYear(),monthShown.getMonth()+n,1);monthDay=1;renderMonth()}
@@ -211,7 +211,7 @@ function restoreLocalBackup(index){
  }catch(e){alert('Impossibile ripristinare la copia: '+e.message)}
 }
 
-const APP_VERSION='4.9.32';
+const APP_VERSION='4.9.33';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
