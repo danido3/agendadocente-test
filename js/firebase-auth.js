@@ -18,7 +18,8 @@ const logout=document.getElementById('firebaseLogout');
 const cloudUpload=document.getElementById('cloudUpload'),cloudDownload=document.getElementById('cloudDownload'),cloudStatus=document.getElementById('cloudStatus');
 const autoButton=document.getElementById('autoSyncToggle'),autoStatus=document.getElementById('autoSyncStatus');
 let autoEnabled=false,autoStop=null,autoUser=null,autoRevision=0,autoHash=null,autoDirty=false,autoBusy=false,autoTimer=null,autoConflict=false;
-function fingerprint(s){return JSON.stringify([s.entries,s.personalization,s.closures])}
+function canonical(v){if(Array.isArray(v))return v.map(canonical);if(v&&typeof v==='object')return Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])]));return v}
+function fingerprint(s){return JSON.stringify(canonical([s.entries,s.personalization,s.closures]))}
 function autoMessage(s){autoStatus.textContent=s}
 function autoUI(){autoButton.hidden=!currentUser;resolveButton.hidden=!currentUser||autoEnabled;autoButton.textContent=autoEnabled?'Disattiva sincronizzazione automatica':'Attiva sincronizzazione automatica';cloudUpload.disabled=autoEnabled;cloudDownload.disabled=autoEnabled}
 function stopAuto(reason){if(autoStop){autoStop();autoStop=null}if(autoTimer)clearTimeout(autoTimer);autoTimer=null;autoEnabled=false;autoBusy=false;autoDirty=false;autoConflict=false;autoUser=null;autoHash=null;autoUI();if(reason)autoMessage(reason)}
@@ -174,7 +175,7 @@ autoButton.addEventListener('click',()=>{
 const resolveButton=document.getElementById('resolveCloudConflicts');
 const resolvePanel=document.getElementById('cloudConflictPanel');
 let proposedMerge=null;
-function stable(x){return JSON.stringify(x)}
+function stable(x){return JSON.stringify(canonical(x))}
 function rowChoice(title,localValue,cloudValue){
  const wrap=document.createElement('div');wrap.className='setting-group';
  const name=document.createElement('strong');name.textContent=title;wrap.append(name);
