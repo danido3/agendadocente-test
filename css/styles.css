@@ -131,3 +131,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 .activity-meta{font-size:12px;color:#607566;margin-top:7px}
 .activity-progress{height:7px;background:#c6d9c2;border-radius:10px;overflow:hidden;margin-top:13px}
 .activity-progress>div{height:100%;background:#52785a;border-radius:10px}
+
+/* 4.9.22: andamento temporale nella scheda dell'attività in corso */
+.inline-activity{margin-top:10px;font-size:12px;font-weight:700;color:#2e7450}.inline-progress{height:6px;border-radius:999px;background:#dce9df;overflow:hidden;margin-top:6px}.inline-progress>div{height:100%;background:#3b9569;border-radius:999px;transition:width .4s ease}
