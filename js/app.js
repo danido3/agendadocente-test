@@ -234,7 +234,7 @@ function restoreLocalBackup(index){
  }catch(e){alert('Impossibile ripristinare la copia: '+e.message)}
 }
 
-const APP_VERSION='4.9.20';
+const APP_VERSION='4.9.21';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
