@@ -52,10 +52,10 @@ function renderCurrentActivity(now,lessons){
    const start=toMinutes(x.start),end=toMinutes(x.end),progress=Math.max(0,Math.min(100,Math.round((minutes-start)/(end-start)*100)));
    return '<div class="activity-current"><div class="activity-kicker">◷ '+label(x)+' in corso</div><div class="activity-flex"><div><strong>'+title(x)+'</strong>'+(x.room?'<div class="activity-meta">'+safe(x.room)+'</div>':'')+'</div><span class="activity-end">Fino alle '+safe(x.end)+'</span></div><div class="activity-progress"><div style="width:'+progress+'%"></div></div><div class="activity-meta">'+(end-minutes)+' minuti rimanenti</div></div>'
   }).join('');
- }else html='<div class="activity-idle">Nessuna attività in corso</div>';
+ }else html='';
  if(next)html+='<div class="activity-next"><div class="activity-kicker">Prossima attività</div><div class="activity-flex"><strong>'+title(next)+'</strong><strong>'+safe(next.start)+'</strong></div><div class="activity-meta">'+label(next)+(next.room?' · '+safe(next.room):'')+'</div></div>';
- else html+='<div class="activity-next activity-meta">Nessun’altra attività prevista per oggi.</div>';
- el.innerHTML=html;
+ 
+ el.innerHTML=html;el.hidden=!html;
 }
 function render(){const now=new Date(),dow=now.getDay(),date=localDate();$('todayDate').textContent=now.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});const lessons=data.filter(x=>x.type==='lesson'&&!closureFor(date)&&Number(x.day)===dow);const currentTime=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');const extras=data.filter(x=>x.type==='event'&&x.date&&(x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime))).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));$('lc').textContent=formatHours(lessons.reduce((total,x)=>total+lessonHours(x),0));$('ec').textContent=extras.length;renderCurrentActivity(now,lessons);$('todayLessons').innerHTML=closureFor(date)?'<div class="closure-banner">📅 '+safe(closureFor(date))+' — lezioni sospese</div>':list(lessons);$('todayExtras').innerHTML=extras.length?extras.map((x,i)=>`${i===0||extras[i-1].date!==x.date?`<div class="muted" style="margin-top:18px">${safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</div>`:''}${card(x,x.date===date)}`).join(''):'<div class="empty">Nessun impegno in programma.</div>';$('weekList').innerHTML=renderWeekTable();const all=data.filter(x=>x.type==='event');
 const eventIsUpcoming=x=>x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime);
