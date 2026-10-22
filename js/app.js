@@ -211,7 +211,20 @@ function restoreLocalBackup(index){
  }catch(e){alert('Impossibile ripristinare la copia: '+e.message)}
 }
 
-const APP_VERSION='4.9.34';
+window.agendaCloudExport=()=>backupSnapshot();
+window.agendaCloudImport=function(x){
+ if(!x||x.format!=='agenda-ipia-backup'||x.schema!==1||!validEntries(x.entries)||!validPersonalization(x.personalization)||!Array.isArray(x.closures)||x.closures.length>300||normalizeClosures(x.closures).length!==x.closures.length)throw Error('Backup cloud non valido');
+ const keys=[KEY,CONFIG_KEY,CLOSURES_KEY,SAFETY_BACKUP_KEY],old=keys.map(k=>localStorage.getItem(k));
+ try{
+  localStorage.setItem(SAFETY_BACKUP_KEY,JSON.stringify(backupSnapshot()));
+  localStorage.setItem(KEY,JSON.stringify(x.entries));
+  localStorage.setItem(CONFIG_KEY,JSON.stringify(normalizeConfig(x.personalization)));
+  localStorage.setItem(CLOSURES_KEY,JSON.stringify(normalizeClosures(x.closures)));
+ }catch(e){keys.forEach((k,i)=>{try{old[i]===null?localStorage.removeItem(k):localStorage.setItem(k,old[i])}catch(_){}});throw e}
+ data=x.entries;config=normalizeConfig(x.personalization);closures=normalizeClosures(x.closures);
+ populateChoices();renderSettings();renderClosures();render();renderBackupList();
+};
+const APP_VERSION='4.9.35';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
