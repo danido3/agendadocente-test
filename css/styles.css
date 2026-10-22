@@ -171,3 +171,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 /* TEST 4.9.34: pulsanti account Google */
 #firebaseLogin[hidden],#firebaseLogout[hidden]{display:none!important}
 #firebaseAuthStatus{overflow-wrap:anywhere}
+
+/* TEST 4.9.35: cloud action visibility */
+#cloudUpload[hidden],#cloudDownload[hidden]{display:none!important}
+#cloudStatus{overflow-wrap:anywhere}
