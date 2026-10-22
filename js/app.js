@@ -82,7 +82,7 @@ function renderMonth(){
 function renderWeekTable(){
  const lessons=data.filter(x=>x.type==='lesson');
  if(!lessons.length)return '<div class="empty">Nessuna lezione settimanale inserita.</div>';
- const weekdays=lessons.some(x=>Number(x.day)===6)?[1,2,3,4,5,6]:[1,2,3,4,5];
+ const weekdays=[1,2,3,4,5,6];
  const starts=['08:20','09:20','10:20','11:20','12:20','13:20'];
  const endings=['09:20','10:20','11:20','12:20','13:20','14:20'];
  const extra=lessons.map(x=>x.start).filter(t=>t&&!starts.includes(t));
@@ -121,7 +121,7 @@ function renderWeekTable(){
    }).join('');
    return '<tr><td>'+label+'</td>'+cells+'</tr>';
  }).join('');
- return '<div class="week-scroll" tabindex="0" aria-label="Tabella orario settimanale, scorri orizzontalmente"><table class="week-table">'+head+'<tbody>'+rows+'</tbody></table></div>';
+ return '<div class="week-scroll week-compact" tabindex="0" aria-label="Tabella orario settimanale da lunedì a sabato"><table class="week-table">'+head+'<tbody>'+rows+'</tbody></table></div>';
 }
 function xEnd(x){return x.end||''}
 $('weekList').addEventListener('click',e=>{const b=e.target.closest('[data-entry-id]');if(b)editEntry(b.dataset.entryId)});
@@ -211,7 +211,7 @@ function restoreLocalBackup(index){
  }catch(e){alert('Impossibile ripristinare la copia: '+e.message)}
 }
 
-const APP_VERSION='4.9.28';
+const APP_VERSION='4.9.29';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
