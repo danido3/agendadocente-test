@@ -175,3 +175,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 /* TEST 4.9.35: cloud action visibility */
 #cloudUpload[hidden],#cloudDownload[hidden]{display:none!important}
 #cloudStatus{overflow-wrap:anywhere}
+
+/* TEST 4.9.36 */
+#autoSyncToggle[hidden]{display:none!important}
+#autoSyncStatus{overflow-wrap:anywhere}
