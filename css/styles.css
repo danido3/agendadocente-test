@@ -143,3 +143,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 /* 4.9.25: contatori integrati nelle intestazioni di Oggi */
 #today .today-section-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 #today .today-section-count{display:inline-flex;align-items:center;justify-content:center;font:inherit;color:inherit;font-weight:inherit;line-height:1;min-width:1ch}
+
+/* 4.9.28: evidenzia tutta la colonna del giorno corrente in ambra */
+.week-table th.week-today-top,.week-table td.week-today-cell{box-shadow:inset 2px 0 #d2a04f,inset -2px 0 #d2a04f}
+.week-table th.week-today-top{border-top:2px solid #d2a04f;border-radius:9px 9px 0 0;box-shadow:inset 2px 0 #d2a04f,inset -2px 0 #d2a04f,inset 0 -4px 0 #729777}
+.week-table td.week-today-bottom{border-bottom:2px solid #d2a04f;border-radius:0 0 9px 9px}
