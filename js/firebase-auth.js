@@ -1,4 +1,4 @@
-// Agenda IPIA TEST 4.9.38: accesso Google, senza sincronizzazione dei dati
+// Agenda IPIA TEST 4.9.39: accesso Google, senza sincronizzazione dei dati
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 const app=initializeApp({
@@ -9,6 +9,7 @@ const app=initializeApp({
   messagingSenderId:'505492164166',
   appId:'1:505492164166:web:513e9e96d49d77dabd4447'
 });
+import {getMessaging,getToken,isSupported} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js';
 import {getFirestore,doc,getDoc,setDoc,serverTimestamp,runTransaction,onSnapshot,getDocFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const db=getFirestore(app);
 const auth=getAuth(app),provider=new GoogleAuthProvider();
@@ -236,7 +237,7 @@ async function inspectConflict(){
 }
 resolveButton.addEventListener('click',inspectConflict);
 
-/* TEST 4.9.38 — solo verifica autorizzazione, senza invio push */
+/* TEST 4.9.39 — solo verifica autorizzazione, senza invio push */
 const pushStatus=document.getElementById('pushStatus');
 const pushPermission=document.getElementById('pushPermission');
 function pushSupport(){
@@ -257,3 +258,28 @@ pushPermission.addEventListener('click',async()=>{
  }catch(e){pushStatus.textContent='Richiesta non riuscita: '+e.message}
 });
 pushSupport();
+
+/* TEST 4.9.39: registra questo dispositivo per FCM; nessun invio automatico */
+const VAPID_PUBLIC_KEY='BEFcoml3oFQA-oll8NwHYiYpMTDkzyyAPmVsnVh_ohNt2jDTr7OuFbrE_CEGbqKt_YUfj-YE7Fg57dd6tuBlhxk';
+const registerPush=document.getElementById('registerPush');
+const registrationStatus=document.getElementById('pushRegistrationStatus');
+registerPush.addEventListener('click',async()=>{
+ registerPush.disabled=true;
+ registrationStatus.textContent='Registrazione del dispositivo in corso…';
+ try{
+  if(!currentUser)throw Error('Accedi prima con Google.');
+  if(!await isSupported())throw Error('Firebase Messaging non è supportato in questo browser.');
+  if(Notification.permission!=='granted')throw Error('Autorizza prima le notifiche.');
+  const reg=await navigator.serviceWorker.ready;
+  const token=await getToken(getMessaging(app),{vapidKey:VAPID_PUBLIC_KEY,serviceWorkerRegistration:reg});
+  if(!token)throw Error('Firebase non ha restituito un token.');
+  // Un token è un identificativo sensibile: non mostrarlo o stamparlo nei log.
+  const tokenId=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));
+  const id=Array.from(new Uint8Array(tokenId)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  await setDoc(doc(db,'users',currentUser.uid,'pushTokens',id),{
+   token,createdAt:serverTimestamp(),platform:'web',app:'agenda-ipia-test'
+  },{merge:true});
+  registrationStatus.textContent='Dispositivo registrato per le notifiche push. Nessuna notifica è ancora programmata.';
+ }catch(e){registrationStatus.textContent='Registrazione non riuscita: '+(e.code||e.message)}
+ finally{registerPush.disabled=false}
+});
