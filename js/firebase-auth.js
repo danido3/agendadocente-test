@@ -1,4 +1,4 @@
-// Agenda IPIA TEST 4.9.40: accesso Google, senza sincronizzazione dei dati
+// Agenda IPIA TEST 4.9.41: accesso Google, senza sincronizzazione dei dati
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 const app=initializeApp({
@@ -237,7 +237,7 @@ async function inspectConflict(){
 }
 resolveButton.addEventListener('click',inspectConflict);
 
-/* TEST 4.9.40 — solo verifica autorizzazione, senza invio push */
+/* TEST 4.9.41 — solo verifica autorizzazione, senza invio push */
 const pushStatus=document.getElementById('pushStatus');
 const pushPermission=document.getElementById('pushPermission');
 function pushSupport(){
@@ -259,7 +259,7 @@ pushPermission.addEventListener('click',async()=>{
 });
 pushSupport();
 
-/* TEST 4.9.40: registra questo dispositivo per FCM; nessun invio automatico */
+/* TEST 4.9.41: registra questo dispositivo per FCM; nessun invio automatico */
 const VAPID_PUBLIC_KEY='BEFcoml3oFQA-oll8NwHYiYpMTDkzyyAPmVsnVh_ohNt2jDTr7OuFbrE_CEGbqKt_YUfj-YE7Fg57dd6tuBlhxk';
 const registerPush=document.getElementById('registerPush');
 const registrationStatus=document.getElementById('pushRegistrationStatus');
@@ -284,7 +284,7 @@ registerPush.addEventListener('click',async()=>{
  finally{registerPush.disabled=false}
 });
 
-/* TEST 4.9.40: separa test locale di iOS da consegna FCM */
+/* TEST 4.9.41: separa test locale di iOS da consegna FCM */
 const localPushTest=document.getElementById('localPushTest');
 const pushDiagnostic=document.getElementById('pushDiagnostic');
 localPushTest.addEventListener('click',async()=>{
