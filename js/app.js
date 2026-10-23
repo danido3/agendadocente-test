@@ -224,7 +224,7 @@ window.agendaCloudImport=function(x){
  data=x.entries;config=normalizeConfig(x.personalization);closures=normalizeClosures(x.closures);
  populateChoices();renderSettings();renderClosures();render();renderBackupList();
 };
-const APP_VERSION='4.9.38';
+const APP_VERSION='4.9.39';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
