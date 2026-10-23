@@ -1,4 +1,4 @@
-// Agenda IPIA TEST 4.9.37: accesso Google, senza sincronizzazione dei dati
+// Agenda IPIA TEST 4.9.38: accesso Google, senza sincronizzazione dei dati
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 const app=initializeApp({
@@ -235,3 +235,25 @@ async function inspectConflict(){
  finally{resolveButton.disabled=false}
 }
 resolveButton.addEventListener('click',inspectConflict);
+
+/* TEST 4.9.38 — solo verifica autorizzazione, senza invio push */
+const pushStatus=document.getElementById('pushStatus');
+const pushPermission=document.getElementById('pushPermission');
+function pushSupport(){
+ const secure=window.isSecureContext;
+ const supported=secure&&'Notification' in window&&'serviceWorker' in navigator&&'PushManager' in window;
+ if(!supported){pushStatus.textContent='Notifiche push non disponibili in questa modalità/browser. Su iPhone apri la web app dalla schermata Home.';pushPermission.disabled=true;return false}
+ const state=Notification.permission;
+ pushStatus.textContent=state==='granted'?'Autorizzazione concessa. Invio push non ancora configurato.':state==='denied'?'Notifiche bloccate: modifica i permessi nelle impostazioni del dispositivo.':'Notifiche supportate. Tocca il pulsante per richiedere il permesso.';
+ pushPermission.disabled=state!=='default';
+ return true;
+}
+pushPermission.addEventListener('click',async()=>{
+ if(!pushSupport())return;
+ try{
+  const result=await Notification.requestPermission();
+  pushSupport();
+  if(result==='granted')pushStatus.textContent='Permesso concesso. Prossimo passo: configurare il servizio di invio, senza costi.';
+ }catch(e){pushStatus.textContent='Richiesta non riuscita: '+e.message}
+});
+pushSupport();
