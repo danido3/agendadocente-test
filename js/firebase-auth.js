@@ -1,4 +1,4 @@
-// Agenda IPIA TEST 4.9.39: accesso Google, senza sincronizzazione dei dati
+// Agenda IPIA TEST 4.9.40: accesso Google, senza sincronizzazione dei dati
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 const app=initializeApp({
@@ -9,7 +9,7 @@ const app=initializeApp({
   messagingSenderId:'505492164166',
   appId:'1:505492164166:web:513e9e96d49d77dabd4447'
 });
-import {getMessaging,getToken,isSupported} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js';
+import {getMessaging,getToken,isSupported,onMessage} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js';
 import {getFirestore,doc,getDoc,setDoc,serverTimestamp,runTransaction,onSnapshot,getDocFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const db=getFirestore(app);
 const auth=getAuth(app),provider=new GoogleAuthProvider();
@@ -237,7 +237,7 @@ async function inspectConflict(){
 }
 resolveButton.addEventListener('click',inspectConflict);
 
-/* TEST 4.9.39 — solo verifica autorizzazione, senza invio push */
+/* TEST 4.9.40 — solo verifica autorizzazione, senza invio push */
 const pushStatus=document.getElementById('pushStatus');
 const pushPermission=document.getElementById('pushPermission');
 function pushSupport(){
@@ -259,7 +259,7 @@ pushPermission.addEventListener('click',async()=>{
 });
 pushSupport();
 
-/* TEST 4.9.39: registra questo dispositivo per FCM; nessun invio automatico */
+/* TEST 4.9.40: registra questo dispositivo per FCM; nessun invio automatico */
 const VAPID_PUBLIC_KEY='BEFcoml3oFQA-oll8NwHYiYpMTDkzyyAPmVsnVh_ohNt2jDTr7OuFbrE_CEGbqKt_YUfj-YE7Fg57dd6tuBlhxk';
 const registerPush=document.getElementById('registerPush');
 const registrationStatus=document.getElementById('pushRegistrationStatus');
@@ -283,3 +283,26 @@ registerPush.addEventListener('click',async()=>{
  }catch(e){registrationStatus.textContent='Registrazione non riuscita: '+(e.code||e.message)}
  finally{registerPush.disabled=false}
 });
+
+/* TEST 4.9.40: separa test locale di iOS da consegna FCM */
+const localPushTest=document.getElementById('localPushTest');
+const pushDiagnostic=document.getElementById('pushDiagnostic');
+localPushTest.addEventListener('click',async()=>{
+ try{
+  if(Notification.permission!=='granted')throw Error('Notifiche non autorizzate');
+  const reg=await navigator.serviceWorker.ready;
+  await reg.showNotification('Agenda IPIA TEST',{body:'Prova locale: le notifiche del dispositivo funzionano.',tag:'agenda-ipia-local-test',icon:'./icon-192.png'});
+  pushDiagnostic.textContent='Notifica locale richiesta a iOS. Se compare, il sistema notifiche funziona; non dimostra ancora la consegna FCM.';
+ }catch(e){pushDiagnostic.textContent='Test locale non riuscito: '+e.message}
+});
+isSupported().then(ok=>{
+ if(!ok)return;
+ onMessage(getMessaging(app),payload=>{
+  const title=payload.notification?.title||'Agenda IPIA TEST';
+  const body=payload.notification?.body||'Messaggio Firebase ricevuto';
+  pushDiagnostic.textContent='Messaggio FCM ricevuto mentre l’app è aperta: '+title;
+  navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body,tag:'agenda-ipia-fcm-foreground'})).catch(e=>{
+   pushDiagnostic.textContent+=' (impossibile mostrare notifica: '+e.message+')';
+  });
+ });
+}).catch(e=>{pushDiagnostic.textContent='Ascolto FCM non disponibile: '+e.message});
