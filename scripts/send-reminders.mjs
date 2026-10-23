@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 
 const dryRun=process.env.DRY_RUN==='true';
 const enabled=process.env.ACTIONS_REMINDERS_ENABLED==='true';
-if(!enabled){console.log('Promemoria automatici disattivati; nessun invio.');process.exit(0)}
+if(!enabled&&!dryRun){console.log('Promemoria automatici disattivati; nessun invio.');process.exit(0)}
 const raw=process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
 if(!raw){console.error('Manca il segreto FIREBASE_SERVICE_ACCOUNT_JSON');process.exitCode=1}
 else {
