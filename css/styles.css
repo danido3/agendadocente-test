@@ -44,7 +44,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .week-lesson.lte{background:#fff0b8;border-color:#efd77d}.week-lesson.ttimd{background:#e2f4e7;border-color:#b9e4c6}
 .week-subject{font-size:16px;font-weight:650;line-height:1.15;overflow-wrap:anywhere}.week-class{font-size:14px;padding:2px 3px;border-radius:4px;white-space:normal;overflow-wrap:anywhere;font-weight:600;max-width:100%;line-height:1.1}
 .week-class.class-2a{background:#dcebff;color:#2059a5}.week-class.class-4a{background:#ffe0d5;color:#a34224}.week-class.class-4b{background:#f0deff;color:#743a9e}
-.week-empty{color:#b5becb}.week-table td.week-spanning{vertical-align:middle}.week-table td.week-spanning .week-lesson{min-height:var(--lesson-span-height,80px)}.week-room{display:none}/* Aula e note restano accessibili toccando la lezione */
+.week-empty{color:#b5becb}.week-table td.week-spanning{vertical-align:middle}.week-table td.week-spanning .week-lesson{min-height:var(--lesson-span-height,80px)}.week-room{display:block;max-width:100%;font-size:12px;line-height:1.2;font-weight:500;color:#455a68;overflow-wrap:anywhere;text-align:center;margin-top:3px}/* L'aula o laboratorio sono visibili direttamente nella settimana. */
 
 .update-notice{position:fixed;left:12px;right:12px;bottom:88px;z-index:50;max-width:570px;margin:auto;padding:12px 14px;border:1px solid #bad4fa;border-radius:14px;background:#fff;box-shadow:0 7px 30px #1b305330;display:flex;gap:12px;align-items:center;justify-content:space-between}
 .update-notice[hidden]{display:none}.update-notice p{margin:4px 0 0;font-size:12px;color:#52657b}.update-notice button{flex:none;background:#214f9a;color:#fff}
