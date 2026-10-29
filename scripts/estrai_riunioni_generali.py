@@ -7,8 +7,8 @@ from datetime import datetime
 from proposte_circolare_92 import dates_in
 MONTHS={"gennaio":1,"febbraio":2,"marzo":3,"aprile":4,"maggio":5,"giugno":6,
         "luglio":7,"agosto":8,"settembre":9,"ottobre":10,"novembre":11,"dicembre":12}
-DATE_WORD=re.compile(r"(?<!\\d)([0-3]?\\d)\\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\\s+(20\\d{2})",re.I)
-RANGE=re.compile(r"\\b(?:dalle\\s+)?(?:ore\\s+)?([01]?\\d|2[0-3])[:.]([0-5]\\d)\\s*(?:alle|fino\\s+alle|[-–])\\s*(?:ore\\s+)?([01]?\\d|2[0-3])[:.]([0-5]\\d)",re.I)
+DATE_WORD=re.compile(r"(?<!\d)([0-3]?\d)\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(20\d{2})",re.I)
+RANGE=re.compile(r"\b(?:dalle\s+)?(?:ore\s+)?([01]?\d|2[0-3])[:.]([0-5]\d)\s*(?:alle|fino\s+alle|[-–])\s*(?:ore\s+)?([01]?\d|2[0-3])[:.]([0-5]\d)",re.I)
 
 TYPES=(
     ("collegio", "Collegio dei docenti"),
@@ -42,8 +42,8 @@ def single_general_event(title,pages):
         return None
     # Accetta solo un singolo appuntamento non ambiguo nel documento.
     candidates=set()
-    merged="\\n".join(text for _,text in pages)
-    flat=re.sub(r"\\s+"," ",merged)
+    merged="\n".join(text for _,text in pages)
+    flat=re.sub(r"\s+"," ",merged)
     # Non proporre convocazioni riservate a commissioni, coordinatori, referenti.
     low=flat.lower()
     if "collegio" in typ.lower() and not ("docenti" in low or "collegio docenti" in title.lower()):
