@@ -26,7 +26,11 @@ jobs:
           python-version: '3.12'
       - name: Librerie pubbliche
         run: python -m pip install requests beautifulsoup4 pymupdf
-      - name: Rileva nuovi consigli di classe pubblici
+      - name: Verifica sintassi e regole di estrazione
+        run: |
+          python -m compileall -q scripts
+          python scripts/test_riunioni_generali.py
+      - name: Rileva nuove convocazioni pubbliche
         run: python scripts/aggiorna_proposte_pubbliche.py
       - name: Pubblica soltanto il JSON delle proposte
         shell: bash
