@@ -25,14 +25,14 @@ def extract_nearby_schedule(lines, index):
     Alle nelle successive; data nelle 4 righe adiacenti.
     Se trova ambiguita', lascia il campo vuoto."""
     line = lines[index]
-    start_match = re.search(r"\\bDalle\\s+([01]?\\d|2[0-3])[:.]([0-5]\\d)", line, re.I)
+    start_match = re.search(r"\bDalle\s+([01]?\d|2[0-3])[:.]([0-5]\d)", line, re.I)
     start = (f"{int(start_match.group(1)):02d}:{start_match.group(2)}"
              if start_match else None)
     end = None
     for j in range(index + 1, min(len(lines), index + 4)):
-        if re.search(r"\\bDalle\\s+\\d", lines[j], re.I):
+        if re.search(r"\bDalle\s+\d", lines[j], re.I):
             break  # Nuova riunione: non prendere il suo orario finale.
-        m = re.search(r"\\bAlle\\s+([01]?\\d|2[0-3])[:.]([0-5]\\d)", lines[j], re.I)
+        m = re.search(r"\bAlle\s+([01]?\d|2[0-3])[:.]([0-5]\d)", lines[j], re.I)
         if m:
             end = f"{int(m.group(1)):02d}:{m.group(2)}"
             break
