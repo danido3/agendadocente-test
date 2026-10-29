@@ -20,6 +20,32 @@ def dates_in(text):
 def times_in(text):
     return list(dict.fromkeys(f"{int(h):02d}:{int(m):02d}" for h,m in TIME_RE.findall(text)))
 
+def extract_nearby_schedule(lines, index):
+    """Estrae data e orari dalla struttura visibile: Dalle nella riga classe,
+    Alle nelle successive; data nelle 4 righe adiacenti.
+    Se trova ambiguita', lascia il campo vuoto."""
+    line = lines[index]
+    start_match = re.search(r"\\bDalle\\s+([01]?\\d|2[0-3])[:.]([0-5]\\d)", line, re.I)
+    start = (f"{int(start_match.group(1)):02d}:{start_match.group(2)}"
+             if start_match else None)
+    end = None
+    for j in range(index + 1, min(len(lines), index + 4)):
+        if re.search(r"\\bDalle\\s+\\d", lines[j], re.I):
+            break  # Nuova riunione: non prendere il suo orario finale.
+        m = re.search(r"\\bAlle\\s+([01]?\\d|2[0-3])[:.]([0-5]\\d)", lines[j], re.I)
+        if m:
+            end = f"{int(m.group(1)):02d}:{m.group(2)}"
+            break
+    if not (start and end and start < end):
+        start, end = None, None
+    candidates=[]
+    for j in range(max(0,index-4), min(len(lines),index+5)):
+        for date in dates_in(lines[j]):
+            candidates.append((abs(j-index), date))
+    distinct = sorted(set(date for _,date in candidates))
+    date = distinct[0] if len(distinct)==1 else None
+    return date,start,end
+
 def extract():
     url,title=find_circular()
     pdfs=find_pdfs(url)
@@ -45,22 +71,12 @@ def extract():
                 before=lines[max(0,i-12):i]
                 after=lines[i+1:min(len(lines),i+5)]
                 local=[line]+after[:3]
-                # Prima privilegia la riga della classe. Se i valori non bastano,
-                # fornisce il contesto ma NON inventa gli orari.
-                own_times=times_in(line)
-                own_dates=dates_in(line)
-                preceding_dates=dates_in(" ".join(before))
-                date_candidates=own_dates  # Evita di assegnare la data di un'altra classe
-                row_times=own_times
+                date_value, start, end = extract_nearby_schedule(lines, i)
                 for cls in classes:
                     key=(cls,pdf_url,pno,line)
                     if key in seen:continue
                     seen.add(key)
-                    valid_date=date_candidates[0] if len(date_candidates)==1 else None
-                    # Solo con due orari sulla stessa riga e in ordine si compilano.
-                    start=end=None
-                    if len(row_times)==2 and row_times[0]<row_times[1]:
-                        start,end=row_times
+                    valid_date=date_value
                     proposal={
                       "id":f"circ-92-{cls.lower().replace(' ','-')}-{len(result['proposte'])+1}",
                       "titolo":f"Consiglio di classe {CLASSES[cls]}",
@@ -73,7 +89,7 @@ def extract():
                       "fonte":{"circolare":92,"url":url,"pdf":pdf_url,"pagina":pno},
                       "estratto_originale":line[:350],
                       "contesto":(before[-3:]+local)[:8],
-                      "nota":"Data e orari nulli se non determinabili con certezza dalla riga; controllare sempre il PDF."
+                      "nota":"Data e orari nulli se ambigui nelle righe vicine; verificare sul PDF prima di approvare."
                     }
                     result["proposte"].append(proposal)
     with open("proposte_circolare_92_test.json","w",encoding="utf-8") as f:
