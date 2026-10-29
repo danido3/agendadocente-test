@@ -48,7 +48,7 @@
     if (conflict) {alert('Un impegno identico per classe, data e orario è già presente. Nessuna duplicazione.');return;}
     if (!confirm('Confermi l’inserimento in Agenda IPIA TEST?\\n'+p.titolo+'\\n'+p.data+' · '+p.ora_inizio+'–'+p.ora_fine)) return;
     data.push({id,type:'event',day:'',date:p.data,start:p.ora_inizio,end:p.ora_fine,
-      subject:'Consiglio di classe',classroom:p.classe,room:'',
+      subject:p.classe?'Consiglio di classe':p.titolo,classroom:p.classe,room:'',
       note:'Circolare n. '+p.fonte.circolare,reminder:'5'});
     save();draw();
   });
