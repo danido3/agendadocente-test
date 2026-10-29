@@ -1,0 +1,26 @@
+name: TEST lettura circolari pubbliche
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  leggi-circolari:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Scarica repository
+        uses: actions/checkout@v4
+      - name: Prepara Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Leggi archivio pubblico
+        run: python scripts/leggi_circolari_pubbliche.py
+      - name: Salva risultato del test
+        uses: actions/upload-artifact@v4
+        with:
+          name: circolari-pubbliche-test
+          path: circolari_pubbliche_test.json
+          retention-days: 3
