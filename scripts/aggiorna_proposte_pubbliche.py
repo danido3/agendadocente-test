@@ -15,13 +15,14 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from test_pdf_circolare_92 import ROOT, ARCHIVE, get, find_pdfs, read_pdf, matches_class, clean
 from proposte_circolare_92 import extract_nearby_schedule, CLASSES
+from estrai_riunioni_generali import single_general_event, type_for
 
 OUT = Path("data/proposte-circolari.json")
 TODAY = datetime.now(ZoneInfo("Europe/Rome")).date()
 MAX_DATE = TODAY + timedelta(days=370)
 CIRC_RE = re.compile(r"circolare[-_]n[-_.]?(\d+)", re.I)
-KEYWORDS = ("consigli-di-classe", "consigli di classe")
-MAX_CIRCULARS = 12
+KEYWORDS = ("consigli-di-classe", "consigli di classe", "collegio", "dipartiment", "scuola-famiglia", "scuola famiglia", "ricevimento general", "incontro con le famiglie")
+MAX_CIRCULARS = 30
 MAX_PDFS = 6
 MAX_PROPOSALS = 250
 
@@ -40,8 +41,8 @@ def candidates():
         m = CIRC_RE.search(slug)
         if not m:
             continue
-        found[url] = int(m.group(1))
-    return list(found.items())[:MAX_CIRCULARS]
+        found[url] = (int(m.group(1)), label)
+    return [(url, num, title) for url, (num, title) in list(found.items())[:MAX_CIRCULARS]]
 
 def prior():
     if not OUT.exists():
@@ -54,7 +55,7 @@ def prior():
 def valid_proposal(p):
     try:
         return (p["stato"] == "da_verificare"
-                and p["classe"] in set(CLASSES.values())
+                and p["classe"] in set(CLASSES.values()) | {""}
                 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", p["data"]) is not None
                 and p["ora_inizio"] < p["ora_fine"]
                 and re.fullmatch(r"[012]\d:[0-5]\d", p["ora_inizio"]) is not None
@@ -72,7 +73,7 @@ def main():
         raise RuntimeError("Nessuna convocazione pubblica trovata: file precedente preservato")
     errors = 0
     found = 0
-    for url, number in circulars:
+    for url, number, title in circulars:
         try:
             pdfs = find_pdfs(url)[:MAX_PDFS]
             for pdf_url, label in pdfs:
@@ -80,6 +81,26 @@ def main():
                     pages = read_pdf(pdf_url)
                 except Exception:
                     errors += 1
+                    continue
+                # Convocazioni generali: solo una data e intervallo orario
+                # espliciti, senza presumere durata o destinatari.
+                general = single_general_event(title, pages)
+                if general:
+                    when=datetime.strptime(general["data"], "%Y-%m-%d").date()
+                    if TODAY <= when <= MAX_DATE:
+                        token=hashlib.sha256((url+"|generale|"+general["data"]).encode()).hexdigest()[:16]
+                        general_entry={
+                            "id":"circpub-"+token,
+                            "titolo":general["titolo"],"classe":"",
+                            "data":general["data"],"ora_inizio":general["ora_inizio"],
+                            "ora_fine":general["ora_fine"],
+                            "stato":"da_verificare",
+                            "fonte":{"circolare":number,"url":url}
+                        }
+                        if valid_proposal(general_entry):
+                            by_id[general_entry["id"]]=general_entry
+                            found+=1
+                if not ("consigli" in title.lower() and "classe" in title.lower()):
                     continue
                 for pno, content in pages:
                     lines = [clean(x) for x in content.splitlines() if clean(x)]
@@ -130,7 +151,7 @@ def main():
     # Evita riscritture quando non sono cambiati gli eventi.
     proposals = sorted(by_id.values(), key=lambda p:(p["data"],p["ora_inizio"],p["id"]))
     output = {"schema":"agenda-ipia-proposte-v1",
-              "tipo":"circolari_pubbliche_cons_scuola",
+              "tipo":"circolari_pubbliche_riunioni",
               "proposte":proposals}
     serialized = json.dumps(output,ensure_ascii=False,indent=2)+"\n"
     previous=OUT.read_text(encoding="utf-8") if OUT.exists() else ""
