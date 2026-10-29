@@ -102,6 +102,18 @@ def main():
                                      "ora_inizio":start,"ora_fine":end,
                                      "stato":"da_verificare",
                                      "fonte":{"circolare":number,"url":url}}
+                            # Evita di riproporre appuntamenti gia' nel file di collaudo
+                            # con un identificativo diverso ma stessi dati.
+                            duplicate = any(
+                                old.get("classe") == entry["classe"]
+                                and old.get("data") == entry["data"]
+                                and old.get("ora_inizio") == entry["ora_inizio"]
+                                and old.get("ora_fine") == entry["ora_fine"]
+                                and old.get("fonte", {}).get("circolare") == number
+                                for old in by_id.values()
+                            )
+                            if duplicate:
+                                continue
                             if valid_proposal(entry):
                                 # Una rettifica con stessa chiave aggiorna la proposta;
                                 # se e' gia' approvata nell'agenda, non la cambia da sola.
