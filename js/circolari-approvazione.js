@@ -12,12 +12,12 @@
     try { const v=JSON.parse(localStorage.getItem(ignoredKey)||'[]');return Array.isArray(v)?v:[]; }
     catch { return []; }
   }
-  const validated = p => p && typeof p.id==='string' && /^circ92-[a-z0-9-]+$/.test(p.id)
+  const validated = p => p && typeof p.id==='string' && /^(?:circ92-[a-z0-9-]+|circpub-[a-f0-9]{16})$/.test(p.id)
     && typeof p.titolo==='string' && p.titolo.length<100
     && typeof p.classe==='string' && p.classe.length<40
     && validDate(p.data) && validTime(p.ora_inizio) && validTime(p.ora_fine)
     && p.ora_inizio < p.ora_fine
-    && p.fonte && p.fonte.circolare===92
+    && p.fonte && Number.isInteger(p.fonte.circolare) && p.fonte.circolare > 0
     && typeof p.fonte.url==='string' && p.fonte.url.startsWith('https://www.ipsiaiglesias.edu.it/circolare/');
   function draw() {
     const omitted = new Set(ignored());
@@ -25,10 +25,10 @@
     container.hidden = pending.length === 0;
     if (!pending.length) { container.innerHTML='';return; }
     container.innerHTML = '<h2 class="today-section-heading">Circolari da approvare <span class="today-section-count">· '+pending.length+'</span></h2>'+
-      '<p class="hint">TEST · proposte estratte dalla circolare 92. Nessuna aggiunta senza conferma.</p>'+
+      '<p class="hint">TEST · appuntamenti dalle circolari pubbliche. Nessuna aggiunta senza conferma.</p>'+
       pending.map(p => '<div class="card school-event circular-proposal"><div class="content"><strong>'+escapeHtml(p.titolo)+'</strong>'+
       '<div class="meta">'+escapeHtml(p.data.split('-').reverse().join('/'))+' · '+escapeHtml(p.ora_inizio)+'–'+escapeHtml(p.ora_fine)+'</div>'+
-      '<div class="note">Circolare n. 92 · <a target="_blank" rel="noopener noreferrer" href="'+escapeHtml(p.fonte.url)+'">Apri documento</a></div>'+
+      '<div class="note">Circolare n. '+escapeHtml(p.fonte.circolare)+' · <a target="_blank" rel="noopener noreferrer" href="'+escapeHtml(p.fonte.url)+'">Apri documento</a></div>'+
       '<div class="circular-actions"><button type="button" class="primary" data-circular-action="approve" data-proposal="'+escapeHtml(p.id)+'">Approva</button>'+
       '<button type="button" data-circular-action="ignore" data-proposal="'+escapeHtml(p.id)+'">Ignora</button></div></div></div>').join('');
   }
@@ -67,4 +67,6 @@
     }
   }
   load();
+  window.addEventListener('focus',load);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)load();});
 })();
