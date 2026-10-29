@@ -50,7 +50,7 @@ def extract():
                 own_times=times_in(line)
                 own_dates=dates_in(line)
                 preceding_dates=dates_in(" ".join(before))
-                date_candidates=own_dates or preceding_dates[-1:]
+                date_candidates=own_dates  # Evita di assegnare la data di un'altra classe
                 row_times=own_times
                 for cls in classes:
                     key=(cls,pdf_url,pno,line)
@@ -82,6 +82,11 @@ def extract():
     for p in result["proposte"]:
         print(f"{p['classe']} | data={p['data'] or 'DA VERIFICARE'} | "
               f"orario={p['ora_inizio'] or '?'}-{p['ora_fine'] or '?'} | pagina={p['fonte']['pagina']}")
+    print("DIAGNOSTICA TABELLE - righe vicine alle classi:")
+    for p in result["proposte"]:
+        print("---",p["classe"],"pagina",p["fonte"]["pagina"],"---")
+        for line in p["contesto"]:
+            print("  ",line[:240])
     print("ATTENZIONE: nessun evento e' stato inserito nell'agenda.")
     return 0 if result["proposte"] else 1
 
