@@ -10,7 +10,7 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, parse_qs
 
 from bs4 import BeautifulSoup
 from test_pdf_circolare_92 import ROOT, ARCHIVE, get, find_pdfs, read_pdf, matches_class, clean
@@ -18,6 +18,8 @@ from proposte_circolare_92 import extract_nearby_schedule, CLASSES
 from estrai_riunioni_generali import single_general_event, type_for
 
 OUT = Path("data/proposte-circolari.json")
+FILTERED_ARCHIVE = ARCHIVE + "?anno-scolastico=2026"
+MAX_ARCHIVE_PAGES = 25
 TODAY = datetime.now(ZoneInfo("Europe/Rome")).date()
 MAX_DATE = TODAY + timedelta(days=370)
 CIRC_RE = re.compile(r"circolare[-_]n[-_.]?(\d+)", re.I)
@@ -27,21 +29,35 @@ MAX_PDFS = 6
 MAX_PROPOSALS = 250
 
 def candidates():
-    soup = BeautifulSoup(get(ARCHIVE).text, "html.parser")
+    """Consulta l'archivio filtrato 2026/27 e la paginazione, senza link di ricerca del sito."""
     found = {}
-    for a in soup.select("a[href]"):
-        url = urljoin(ARCHIVE, a["href"])
-        parsed = urlparse(url)
-        if parsed.netloc != urlparse(ROOT).netloc or "/circolare/" not in parsed.path:
+    visited = set()
+    queue = [FILTERED_ARCHIVE]
+    while queue and len(visited) < MAX_ARCHIVE_PAGES:
+        page = queue.pop(0)
+        if page in visited:
             continue
-        label = clean(a.get_text(" ", strip=True))
-        slug = parsed.path.lower()
-        if not any(term in (slug + " " + label.lower()) for term in KEYWORDS):
-            continue
-        m = CIRC_RE.search(slug)
-        if not m:
-            continue
-        found[url] = (int(m.group(1)), label)
+        visited.add(page)
+        soup = BeautifulSoup(get(page).text, "html.parser")
+        # Accetta soltanto link degli elementi dell'archivio.
+        for a in soup.select("a[href]"):
+            url = urljoin(page, a["href"])
+            parsed = urlparse(url)
+            if parsed.netloc != urlparse(ROOT).netloc:
+                continue
+            label = clean(a.get_text(" ", strip=True))
+            slug = parsed.path.lower()
+            if "/circolare/" in slug and slug.rstrip("/") != "/circolare":
+                if not any(term in (slug + " " + label.lower()) for term in KEYWORDS):
+                    continue
+                m = CIRC_RE.search(slug)
+                if m:
+                    found[url] = (int(m.group(1)), label)
+            # Le pagine di archivio conservano il parametro anno-scolastico.
+            if re.fullmatch(r"/circolare/page/\\d+/?", parsed.path) and parse_qs(parsed.query).get("anno-scolastico") == ["2026"]:
+                if url not in visited and url not in queue:
+                    queue.append(url)
+    print("Pagine archivio 2026/27 esaminate:", len(visited))
     return [(url, num, title) for url, (num, title) in list(found.items())[:MAX_CIRCULARS]]
 
 def prior():
