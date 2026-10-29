@@ -1,7 +1,6 @@
 {
   "schema": "agenda-ipia-proposte-v1",
-  "tipo": "collaudo_circolare_pubblica",
-  "numero_circolare": 92,
+  "tipo": "circolari_pubbliche_cons_scuola",
   "proposte": [
     {
       "id": "circ92-2026-11-10-4bmat",
