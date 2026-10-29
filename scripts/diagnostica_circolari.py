@@ -181,8 +181,12 @@ def analyze(number,title,url,get=fetch):
         except Exception:
             reasons.append('lettura_fallita'); item['lettura_completa']=False
     item['motivi'] = sorted(set(reasons))
-    item['esito'] = ('esclusa' if not cat or any(x in reasons for x in ('dati_sensibili','tipo_non_supportato','rettifica'))
-                     else 'completa' if item['appuntamenti'] and set(reasons)=={'completo'} else 'incerta')
+    if item['appuntamenti']:
+        item['esito'] = 'completa' if set(reasons)=={'completo'} else 'incerta'
+    elif not cat or any(x in reasons for x in ('dati_sensibili','tipo_non_supportato','rettifica')):
+        item['esito'] = 'esclusa'
+    else:
+        item['esito'] = 'incerta'
     return item
 
 

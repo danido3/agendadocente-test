@@ -50,6 +50,13 @@ class DiagnosticTest(unittest.TestCase):
         self.assertEqual(item['documenti'],1)
         self.assertNotIn('url',item)
         self.assertNotIn('titolo',item)
+        sensitive=d.ROOT+'/wp-content/uploads/GLO.pdf'
+        fixture[url]=f'<main><article class="article-wrapper"><a href="{pdf}">a</a><a href="{sensitive}">allegato</a></article></main>'.encode()
+        item=d.analyze(80,'Convocazione collegio docenti',url,fixture.__getitem__)
+        self.assertEqual(item['esito'],'incerta')
+        self.assertEqual(len(item['appuntamenti']),1)
+        self.assertIn('dati_sensibili',item['motivi'])
+        fixture[url]=f'<main><article class="article-wrapper"><a href="{pdf}">a</a></article></main>'.encode()
         fixture[pdf]=b'not a PDF'
         item=d.analyze(80,'Convocazione collegio docenti',url,fixture.__getitem__)
         self.assertEqual(item['esito'],'incerta')
