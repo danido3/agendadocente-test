@@ -31,7 +31,7 @@ class DiagnosticTest(unittest.TestCase):
 
     def test_private_and_unsupported_no_download(self):
         def forbidden(_): self.fail('Non deve scaricare documenti')
-        for title,reason in [('Convocazione GLO','dati_sensibili'),('Convocazione personale ATA','tipo_non_supportato'),('Rettifica collegio docenti','rettifica')]:
+        for title,reason in [('Convocazione personale ATA','tipo_non_supportato')]:
             item=d.analyze(1,title,d.ROOT+'/circolare/x/',forbidden)
             self.assertIn(reason,item['motivi'])
             self.assertEqual(item['esito'],'esclusa')
@@ -67,3 +67,37 @@ class DiagnosticTest(unittest.TestCase):
         self.assertIsNone(single_general_event('Collegio docenti',[(1,'docenti 29 ottobre 2026 30 ottobre 2026 dalle 15:00 alle 17:00')]))
 
 if __name__=='__main__': unittest.main()
+
+class PersonalRulesTest(unittest.TestCase):
+    def test_requested_categories(self):
+        from regole_impegni import categoria, classi_in
+        for title,cat in [('Convocazione GLO PEI','glo'),('Calendario scrutini finali','scrutini'),('Assemblea d’Istituto corso diurno','assemblea_diurna'),('Nomina coordinatori consigli di classe',None)]:
+            self.assertEqual(categoria(title),cat)
+        self.assertEqual(classi_in('12 A MAT 4 B MATA 2 B MAT'),[])
+        self.assertEqual(classi_in('2ª A MAT e 4B MAT'),['2 A MAT','4 B MAT'])
+
+    def test_glo_privacy_multiple_events_and_rectification(self):
+        import json
+        url=d.ROOT+'/circolare/test/'
+        pdf=d.ROOT+'/wp-content/uploads/GLO.pdf'
+        with fitz.open() as doc:
+            p=doc.new_page()
+            p.insert_text((50,50),'GLO - NomeFittizio RiservatezzaTest\n2 A MAT 10 ottobre 2026 dalle 15:00 alle 15:30\n2 A MAT 10 ottobre 2026 dalle 15:30 alle 16:00\n2 B MAT 10 ottobre 2026 dalle 16:00 alle 16:30\nRettifica della circolare n. 50')
+            raw=doc.tobytes()
+        fixture={url:f'<main><article class="article-wrapper"><a href="{pdf}">GLO</a></article></main>'.encode(),pdf:raw}
+        item=d.analyze(50,'Convocazione GLO PEI',url,fixture.__getitem__)
+        self.assertEqual(len(item['appuntamenti']),2)
+        self.assertNotIn('NomeFittizio',json.dumps(item))
+        self.assertNotIn('RiservatezzaTest',json.dumps(item))
+        changed=d.analyze(52,'Rettifica calendario GLO',url,fixture.__getitem__)
+        self.assertEqual(changed['appuntamenti'],[])
+        self.assertEqual(len(changed['variazioni_candidate']),2)
+        self.assertEqual(changed['riferimenti_circolari'],[50])
+        self.assertEqual(changed['esito'],'incerta')
+
+    def test_incomplete_and_general(self):
+        from regole_impegni import estrai
+        events,inc=estrai('',[(1,'4 A MAT 10 ottobre 2026 ore 15:00')],'glo')
+        self.assertFalse(events); self.assertTrue(inc)
+        events,inc=estrai('',[(1,'Assemblea il 10 ottobre 2026 dalle 10:00 alle 12:00')],'assemblea_diurna')
+        self.assertEqual(len(events),1)

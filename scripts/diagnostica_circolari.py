@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Diagnostica pubblica, senza scritture su agenda o file delle proposte.
-L'ambito appuntamenti replica le tre classi e i tipi generali del parser esistente.
+L'ambito appuntamenti segue le categorie personali in regole_impegni.py.
 Non conserva titoli, URL delle singole circolari, PDF, testi o nominativi.
 """
 import hashlib
@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 import fitz
 from proposte_circolare_92 import extract_nearby_schedule
 from test_pdf_circolare_92 import matches_class, clean
-from estrai_riunioni_generali import single_general_event, type_for
+from regole_impegni import categoria, modifica, riferimenti, estrai
 
 ROOT = 'https://www.ipsiaiglesias.edu.it'
 ARCHIVE = ROOT + '/circolare/?anno-scolastico=2026'
@@ -26,7 +26,7 @@ REASON = {
  'non_convocazione':'Titolo fuori dai criteri di riconoscimento delle convocazioni.',
  'tipo_non_supportato':'Convocazione candidata di un tipo non gestito dal parser attuale.',
  'dati_sensibili':'Possibili dati sensibili: allegati non letti o contenuto scartato.',
- 'rettifica':'Rettifica, annullamento o aggiornamento: richiede confronto manuale.',
+ 'rettifica':'Rettifica, annullamento o aggiornamento: riferimenti e variazioni nel JSON, da verificare; nessun nuovo evento.',
  'lettura_fallita':'Pagina o documento non leggibile; risultato parziale.',
  'nessun_pdf':'Nessun PDF pubblico diretto nel contenuto principale.',
  'pdf_senza_testo':'PDF senza testo estraibile: possibile scansione.',
@@ -115,27 +115,25 @@ def crawl(get=fetch):
 
 
 def category(title):
-    if re.search(r'consigl(?:io|i) di classe',title,re.I): return 'consigli_di_classe'
-    if type_for(title): return 'riunione_generale'
-    return 'altra_convocazione' if CALL.search(title) else None
+    return categoria(title)
 
 
 def analyze(number,title,url,get=fetch):
     cat = category(title)
     item = {'numero':number,'id':hashlib.sha256(url.encode()).hexdigest()[:16],
             'categoria':cat,'convocazione_riconosciuta':bool(cat),'appuntamenti':[],
-            'motivi':[], 'documenti':0,'lettura_completa':True}
+            'modifica':modifica(title),'riferimenti_circolari':[], 'motivi':[], 'documenti':0,'lettura_completa':True}
     reasons = item['motivi']
     if not cat: reasons.append('non_convocazione')
-    elif SENSITIVE.search(title): reasons.append('dati_sensibili')
-    elif re.search(r'rettifica|annull|aggiornamento.*ordine del giorno',title,re.I): reasons.append('rettifica')
+    elif SENSITIVE.search(title) and cat != 'glo': reasons.append('dati_sensibili')
     elif cat == 'altra_convocazione': reasons.append('tipo_non_supportato')
     else:
         try:
             soup = BeautifulSoup(get(url),'html.parser')
             main = soup.select_one('main article.article-wrapper')
             if main is None: raise ValueError('contenuto_assente')
-            if SENSITIVE.search(main.get_text(' ',strip=True)):
+            item['riferimenti_circolari'] = riferimenti(main.get_text(' ',strip=True),number)
+            if SENSITIVE.search(main.get_text(' ',strip=True)) and cat != 'glo':
                 reasons.append('dati_sensibili')
             else:
                 pdfs = sorted({urljoin(url,a['href']) for a in main.select('a[href]')
@@ -144,7 +142,7 @@ def analyze(number,title,url,get=fetch):
                 events = set()
                 for pdf in pdfs:
                     item['documenti'] += 1
-                    if SENSITIVE.search(pdf.replace('-', ' ').replace('_', ' ')):
+                    if SENSITIVE.search(pdf.replace('-', ' ').replace('_', ' ')) and cat != 'glo':
                         reasons.append('dati_sensibili'); continue
                     try:
                         raw = get(pdf)
@@ -154,23 +152,12 @@ def analyze(number,title,url,get=fetch):
                             pages = [(i+1,p.get_text(sort=True)) for i,p in enumerate(doc)]
                         if not any(text.strip() for _,text in pages):
                             reasons.append('pdf_senza_testo'); item['lettura_completa']=False; continue
-                        if SENSITIVE.search(' '.join(t for _,t in pages)):
+                        item['riferimenti_circolari'] = sorted(set(item['riferimenti_circolari']) | set(riferimenti(' '.join(t for _,t in pages),number)))
+                        if SENSITIVE.search(' '.join(t for _,t in pages)) and cat != 'glo':
                             reasons.append('dati_sensibili'); continue
-                        if cat == 'riunione_generale':
-                            event = single_general_event(title,pages)
-                            if event: events.add((event['data'],event['ora_inizio'],event['ora_fine'],''))
-                            else: reasons.append('estrazione_incompleta')
-                        else:
-                            count = 0
-                            for _,text in pages:
-                                lines = [clean(x) for x in text.splitlines() if clean(x)]
-                                for i,line in enumerate(lines):
-                                    for cls in matches_class(line):
-                                        count += 1
-                                        d,s,e = extract_nearby_schedule(lines,i)
-                                        if d and s and e: events.add((d,s,e,cls))
-                                        else: reasons.append('estrazione_incompleta')
-                            if not count: reasons.append('estrazione_incompleta')
+                        extracted,incomplete = estrai(title,pages,cat)
+                        events.update(extracted)
+                        if incomplete: reasons.append('estrazione_incompleta')
                     except Exception:
                         reasons.append('lettura_fallita'); item['lettura_completa']=False
                 for d,s,e,cls in sorted(events):
@@ -180,8 +167,14 @@ def analyze(number,title,url,get=fetch):
                 if item['appuntamenti']: reasons.append('completo')
         except Exception:
             reasons.append('lettura_fallita'); item['lettura_completa']=False
+    if item['modifica']:
+        reasons.append('rettifica')
+        item['variazioni_candidate'] = item['appuntamenti']
+        item['appuntamenti'] = []
     item['motivi'] = sorted(set(reasons))
-    if item['appuntamenti']:
+    if item['modifica']:
+        item['esito'] = 'incerta'
+    elif item['appuntamenti']:
         item['esito'] = 'completa' if set(reasons)=={'completo'} else 'incerta'
     elif not cat or any(x in reasons for x in ('dati_sensibili','tipo_non_supportato','rettifica')):
         item['esito'] = 'esclusa'
@@ -194,11 +187,11 @@ def build(get=fetch):
     found,pages,errors = crawl(get)
     items = [analyze(n,t,u,get) for u,(n,t) in found.items()]
     counts = Counter(x['esito'] for x in items)
-    return {'schema':'diagnostica-circolari-v1','anno_scolastico':'2026/2027',
+    return {'schema':'diagnostica-circolari-v2','anno_scolastico':'2026/2027',
             'generato_utc':datetime.now(timezone.utc).isoformat(),'archivio':ARCHIVE,
             'scrittura_agenda':False,'scrittura_proposte':False,
-            'ambito':'Parser esistente: 2 A MAT, 4 A MAT, 4 B MAT e riunioni generali; intero anno, anche date passate. Altre convocazioni segnalate ma non estratte.',
-            'limiti':'Riconoscimento per titolo; completezza sintattica, non validazione umana. Nessun OCR. Esclusioni preventive per possibili dati sensibili. Non rappresenta tutti gli eventi per tutte le classi.',
+            'ambito':'GLO, consigli e scrutini di 2 A MAT, 4 A MAT, 4 B MAT; collegi docenti e assemblee diurne. Rettifiche e ordine del giorno sono segnalazioni da verificare, non nuovi appuntamenti.',
+            'limiti':'Riconoscimento per titolo; completezza sintattica, non validazione umana. Nessun OCR. GLO elaborati in memoria senza nominativi nei risultati. Riferimenti e variazioni richiedono verifica manuale.',
             'archivio_completo':not errors,'analisi_supportata_completa':not errors and all(x['lettura_completa'] for x in items),
             'pagine_archivio':pages,'errori_archivio':errors,
             'conteggi':{'circolari_totali':len(items),'convocazioni_riconosciute':sum(x['convocazione_riconosciuta'] for x in items),
@@ -219,6 +212,9 @@ def save(report,directory):
     lines += [f'- {r}: {n} — {REASON[r]}' for r,n in report['conteggi_motivi'].items()]
     lines += ['', '## Circolari','', '| Numero | Categoria | Esito | Appuntamenti | Motivi |','|---|---|---|---:|---|']
     lines += [f"| {x['numero']} | {x['categoria'] or '—'} | {x['esito']} | {len(x['appuntamenti'])} | {', '.join(x['motivi'])} |" for x in report['circolari']]
+    for x in report['circolari']:
+        if x.get('modifica'):
+            lines += ['', f"Circolare {x['numero']}: {x['modifica']}; riferimenti espliciti: {x['riferimenti_circolari'] or 'non trovati'}; variazioni candidate: {len(x.get('variazioni_candidate', []))}. Verifica manuale richiesta."]
     if report['errori_archivio']: lines += ['', 'Errori archivio: '+', '.join(report['errori_archivio'])]
     (directory/'report.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
 

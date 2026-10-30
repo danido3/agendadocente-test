@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/diagnostica_circolari.py'
       - 'scripts/test_diagnostica_circolari.py'
+      - 'scripts/regole_impegni.py'
       - '.github/workflows/diagnostica-circolari.yml'
 permissions:
   contents: read
