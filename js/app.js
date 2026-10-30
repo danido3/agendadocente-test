@@ -34,60 +34,12 @@ const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.ge
  return Number.isFinite(minutes)&&minutes>0?minutes/60:0;
 }
 function formatHours(hours){return Number(hours.toFixed(2)).toLocaleString('it-IT',{maximumFractionDigits:2})}
-function render(){const now=new Date(),dow=now.getDay(),date=localDate();$('todayDate').textContent=now.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});const lessons=data.filter(x=>x.type==='lesson'&&!closureFor(date)&&Number(x.day)===dow);const currentTime=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');const extras=data.filter(x=>x.type==='event'&&x.date&&(x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime))).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));const lessonTotal=lessons.reduce((total,x)=>total+lessonHours(x),0);const lc=$('lc'),ec=$('ec');lc.hidden=lessonTotal<=0;lc.textContent=lessonTotal>0?'· '+formatHours(lessonTotal)+' ore':'';ec.hidden=extras.length===0;ec.textContent=extras.length?'· '+extras.length:'';$('todayLessons').innerHTML=closureFor(date)?'<div class="closure-banner">📅 '+safe(closureFor(date))+' — lezioni sospese</div>':list(lessons,true);$('todayExtras').innerHTML=extras.length?extras.map((x,i)=>`${i===0||extras[i-1].date!==x.date?`<div class="muted" style="margin-top:18px">${safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</div>`:''}${card(x,x.date===date,true)}`).join(''):'<div class="empty">Nessun impegno in programma.</div>';renderTodayTimeline(lessons,date,now);$('weekList').innerHTML=renderWeekTable();const all=data.filter(x=>x.type==='event');
+function render(){const now=new Date(),dow=now.getDay(),date=localDate();$('todayDate').textContent=now.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});const lessons=data.filter(x=>x.type==='lesson'&&!closureFor(date)&&Number(x.day)===dow);const currentTime=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');const extras=data.filter(x=>x.type==='event'&&x.date&&(x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime))).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));const lessonTotal=lessons.reduce((total,x)=>total+lessonHours(x),0);const lc=$('lc'),ec=$('ec');lc.hidden=lessonTotal<=0;lc.textContent=lessonTotal>0?'· '+formatHours(lessonTotal)+' ore':'';ec.hidden=extras.length===0;ec.textContent=extras.length?'· '+extras.length:'';$('todayLessons').innerHTML=closureFor(date)?'<div class="closure-banner">📅 '+safe(closureFor(date))+' — lezioni sospese</div>':list(lessons,true);$('todayExtras').innerHTML=extras.length?extras.map((x,i)=>`${i===0||extras[i-1].date!==x.date?`<div class="muted" style="margin-top:18px">${safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</div>`:''}${card(x,x.date===date,true)}`).join(''):'<div class="empty">Nessun impegno in programma.</div>';$('weekList').innerHTML=renderWeekTable();const all=data.filter(x=>x.type==='event');
 const eventIsUpcoming=x=>x.date>date||(x.date===date&&(x.end||x.start||'00:00')>=currentTime);
 const upcoming=all.filter(eventIsUpcoming).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
 const history=all.filter(x=>!eventIsUpcoming(x)).sort((a,b)=>b.date.localeCompare(a.date)||b.start.localeCompare(a.start));
 const renderEventGroups=items=>{let previousDate='';return items.map(x=>{const label=x.date!==previousDate?'<div class="muted" style="margin-top:18px">'+safe(new Date(x.date+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))+'</div>':'';previousDate=x.date;return label+card(x)}).join('')};
 $('commitmentList').innerHTML=all.length?'<h2 class="today-section-heading">In programma'+(upcoming.length?' <span class="today-section-count">· '+upcoming.length+'</span>':'')+'</h2>'+(upcoming.length?renderEventGroups(upcoming):'<div class="empty">Nessun impegno futuro.</div>')+(history.length?'<h2 class="today-section-heading" style="margin-top:28px">Impegni passati <span class="today-section-count">· '+history.length+'</span></h2>'+renderEventGroups(history):''):'<div class="empty">Nessun impegno inserito.</div>';renderMonth()};
-
-/* Timeline del giorno: vista opzionale, nessuna modifica ai dati dell'agenda. */
-const TODAY_MODE_KEY='agenda-ipia-today-mode-v1';
-let todayMode='list';
-try{if(localStorage.getItem(TODAY_MODE_KEY)==='timeline')todayMode='timeline'}catch(e){}
-function setTodayMode(mode){
- todayMode=mode==='timeline'?'timeline':'list';
- try{localStorage.setItem(TODAY_MODE_KEY,todayMode)}catch(e){}
- const listPanel=$('todayListPanel'),timelinePanel=$('todayTimelinePanel');
- if(!listPanel||!timelinePanel)return;
- listPanel.hidden=todayMode!=='list';
- timelinePanel.hidden=todayMode!=='timeline';
- for(const [id,value] of [['todayListMode','list'],['todayTimelineMode','timeline']]){
-  const btn=$(id);if(btn){btn.classList.toggle('active',todayMode===value);btn.setAttribute('aria-pressed',String(todayMode===value))}
- }
- if(todayMode==='timeline')renderTodayTimeline(data.filter(x=>x.type==='lesson'&&!closureFor(localDate())&&Number(x.day)===new Date().getDay()),localDate(),new Date());
-}
-function renderTodayTimeline(lessons,date,now){
- const panel=$('todayTimelinePanel');if(!panel)return;
- if(todayMode!=='timeline')return;
- const min=t=>{const m=/^([0-9]{2}):([0-9]{2})$/.exec(t||'');if(!m)return NaN;const n=+m[1]*60+(+m[2]);return n>=0&&n<1440? n:NaN};
- const format=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
- const events=data.filter(x=>x.type==='event'&&x.date===date);
- const items=[...lessons,...events].map(x=>({...x,_s:min(x.start),_e:min(x.end)})).filter(x=>Number.isFinite(x._s)&&Number.isFinite(x._e)&&x._e>x._s).sort((a,b)=>a._s-b._s||a._e-b._e);
- const closed=closureFor(date);
- if(!items.length){panel.innerHTML=(closed?'<div class="closure-banner">📅 '+safe(closed)+' — lezioni sospese</div>':'')+'<div class="empty">Nessuna attività prevista per oggi.</div>';return}
- const current=now.getHours()*60+now.getMinutes();
- let cursor=items[0]._s,marker=false;
- const result=[];
- const nowMarker=()=>'<div class="timeline-now" aria-label="Ora attuale"><span>'+safe(format(current))+'</span><i></i><strong>Adesso</strong></div>';
- const gap=(from,to)=>{if(to-from>=15)result.push('<div class="timeline-gap"><span>'+safe(format(from))+'–'+safe(format(to))+'</span><span>Tempo libero</span></div>')};
- if(closed)result.push('<div class="closure-banner">📅 '+safe(closed)+' — lezioni sospese</div>');
- for(const x of items){
-  if(x._s>cursor){if(!marker&&current>=cursor&&current<x._s){gap(cursor,current);result.push(nowMarker());marker=true;gap(current,x._s)}else gap(cursor,x._s)}
-  if(!marker&&current<x._s&&current>=items[0]._s){result.push(nowMarker());marker=true}
-  const lesson=x.type==='lesson',color=lesson?findColor('subjects',x.subject,'#eaf2fc'):config.eventStyle.background;
-  const overlap=x._s<cursor;
-  const duration=x._e-x._s;
-  const height=Math.max(64,Math.min(160,Math.round(duration*.65)));
-  const desc=[x.classroom,x.room].filter(Boolean).join(' · ');
-  const active=current>=x._s&&current<x._e;
-  result.push('<button type="button" class="timeline-entry'+(lesson?' timeline-lesson':' timeline-event')+(active?' timeline-active':'')+'" style="--timeline-color:'+safe(color)+';min-height:'+height+'px" onclick="editEntry('+JSON.stringify(x.id).replace(/"/g,'&quot;')+')" aria-label="Modifica '+safe(x.subject||'Attività')+' dalle '+safe(x.start)+' alle '+safe(x.end)+'"><span class="timeline-time">'+safe(x.start)+'<small>'+safe(x.end)+'</small></span><span class="timeline-content"><strong>'+safe(x.subject||'Impegno')+'</strong>'+(desc?'<small>'+safe(desc)+'</small>':'')+(overlap?'<small class="timeline-overlap">In sovrapposizione</small>':'')+(active?'<small class="timeline-current">In corso</small>':'')+'</span></button>');
-  if(!marker&&current>=x._s&&current<x._e){result.push(nowMarker());marker=true}
-  cursor=Math.max(cursor,x._e);
- }
- panel.innerHTML=result.join('');
-}
-
 let monthShown=new Date(new Date().getFullYear(),new Date().getMonth(),1);
 let monthDay=new Date().getDate();
 function shiftMonth(n){monthShown=new Date(monthShown.getFullYear(),monthShown.getMonth()+n,1);monthDay=1;renderMonth()}
@@ -272,7 +224,7 @@ window.agendaCloudImport=function(x){
  data=x.entries;config=normalizeConfig(x.personalization);closures=normalizeClosures(x.closures);
  populateChoices();renderSettings();renderClosures();render();renderBackupList();
 };
-const APP_VERSION='4.9.39';
+const APP_VERSION='4.9.38';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
@@ -299,7 +251,7 @@ async function applyAppUpdate(){
   location.replace('./?updated='+encodeURIComponent(latestAppVersion)+'&t='+Date.now());
  }catch(e){button.disabled=false;button.textContent='Aggiorna';alert('Riprova quando sei online.')}
 }
-populateChoices();setupTimes();render();setTodayMode(todayMode);renderClosures();if(!data.length&&!config.subjects.length&&!config.classes.length)navigate('settings');if ('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+populateChoices();setupTimes();render();renderClosures();if(!data.length&&!config.subjects.length&&!config.classes.length)navigate('settings');if ('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 window.addEventListener('load',()=>{checkAppVersion();setInterval(checkAppVersion,15*60*1000)});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAppVersion()});
 window.addEventListener('online',checkAppVersion);
