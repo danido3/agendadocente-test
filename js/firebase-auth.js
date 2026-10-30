@@ -1,4 +1,4 @@
-// Agenda IPIA TEST 4.9.43: accesso Google, senza sincronizzazione dei dati
+// Agenda IPIA 4.9.37: accesso Google e sincronizzazione Firebase
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 const app=initializeApp({
@@ -9,7 +9,6 @@ const app=initializeApp({
   messagingSenderId:'505492164166',
   appId:'1:505492164166:web:513e9e96d49d77dabd4447'
 });
-import {getMessaging,getToken,isSupported,onMessage} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js';
 import {getFirestore,doc,getDoc,setDoc,serverTimestamp,runTransaction,onSnapshot,getDocFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const db=getFirestore(app);
 const auth=getAuth(app),provider=new GoogleAuthProvider();
@@ -236,73 +235,3 @@ async function inspectConflict(){
  finally{resolveButton.disabled=false}
 }
 resolveButton.addEventListener('click',inspectConflict);
-
-/* TEST 4.9.43 — solo verifica autorizzazione, senza invio push */
-const pushStatus=document.getElementById('pushStatus');
-const pushPermission=document.getElementById('pushPermission');
-function pushSupport(){
- const secure=window.isSecureContext;
- const supported=secure&&'Notification' in window&&'serviceWorker' in navigator&&'PushManager' in window;
- if(!supported){pushStatus.textContent='Notifiche push non disponibili in questa modalità/browser. Su iPhone apri la web app dalla schermata Home.';pushPermission.disabled=true;return false}
- const state=Notification.permission;
- pushStatus.textContent=state==='granted'?'Autorizzazione concessa. Invio push non ancora configurato.':state==='denied'?'Notifiche bloccate: modifica i permessi nelle impostazioni del dispositivo.':'Notifiche supportate. Tocca il pulsante per richiedere il permesso.';
- pushPermission.disabled=state!=='default';
- return true;
-}
-pushPermission.addEventListener('click',async()=>{
- if(!pushSupport())return;
- try{
-  const result=await Notification.requestPermission();
-  pushSupport();
-  if(result==='granted')pushStatus.textContent='Permesso concesso. Prossimo passo: configurare il servizio di invio, senza costi.';
- }catch(e){pushStatus.textContent='Richiesta non riuscita: '+e.message}
-});
-pushSupport();
-
-/* TEST 4.9.43: registra questo dispositivo per FCM; nessun invio automatico */
-const VAPID_PUBLIC_KEY='BEFcoml3oFQA-oll8NwHYiYpMTDkzyyAPmVsnVh_ohNt2jDTr7OuFbrE_CEGbqKt_YUfj-YE7Fg57dd6tuBlhxk';
-const registerPush=document.getElementById('registerPush');
-const registrationStatus=document.getElementById('pushRegistrationStatus');
-registerPush.addEventListener('click',async()=>{
- registerPush.disabled=true;
- registrationStatus.textContent='Registrazione del dispositivo in corso…';
- try{
-  if(!currentUser)throw Error('Accedi prima con Google.');
-  if(!await isSupported())throw Error('Firebase Messaging non è supportato in questo browser.');
-  if(Notification.permission!=='granted')throw Error('Autorizza prima le notifiche.');
-  const reg=await navigator.serviceWorker.ready;
-  const token=await getToken(getMessaging(app),{vapidKey:VAPID_PUBLIC_KEY,serviceWorkerRegistration:reg});
-  if(!token)throw Error('Firebase non ha restituito un token.');
-  // Un token è un identificativo sensibile: non mostrarlo o stamparlo nei log.
-  const tokenId=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));
-  const id=Array.from(new Uint8Array(tokenId)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  await setDoc(doc(db,'users',currentUser.uid,'pushTokens',id),{
-   token,createdAt:serverTimestamp(),platform:'web',app:'agenda-ipia-test'
-  },{merge:true});
-  registrationStatus.textContent='Dispositivo registrato per le notifiche push. Nessuna notifica è ancora programmata.';
- }catch(e){registrationStatus.textContent='Registrazione non riuscita: '+(e.code||e.message)}
- finally{registerPush.disabled=false}
-});
-
-/* TEST 4.9.43: separa test locale di iOS da consegna FCM */
-const localPushTest=document.getElementById('localPushTest');
-const pushDiagnostic=document.getElementById('pushDiagnostic');
-localPushTest.addEventListener('click',async()=>{
- try{
-  if(Notification.permission!=='granted')throw Error('Notifiche non autorizzate');
-  const reg=await navigator.serviceWorker.ready;
-  await reg.showNotification('Agenda IPIA TEST',{body:'Prova locale: le notifiche del dispositivo funzionano.',tag:'agenda-ipia-local-test',icon:'./icon-192.png'});
-  pushDiagnostic.textContent='Notifica locale richiesta a iOS. Se compare, il sistema notifiche funziona; non dimostra ancora la consegna FCM.';
- }catch(e){pushDiagnostic.textContent='Test locale non riuscito: '+e.message}
-});
-isSupported().then(ok=>{
- if(!ok)return;
- onMessage(getMessaging(app),payload=>{
-  const title=payload.notification?.title||'Agenda IPIA TEST';
-  const body=payload.notification?.body||'Messaggio Firebase ricevuto';
-  pushDiagnostic.textContent='Messaggio FCM ricevuto mentre l’app è aperta: '+title;
-  navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body,tag:'agenda-ipia-fcm-foreground'})).catch(e=>{
-   pushDiagnostic.textContent+=' (impossibile mostrare notifica: '+e.message+')';
-  });
- });
-}).catch(e=>{pushDiagnostic.textContent='Ascolto FCM non disponibile: '+e.message});
