@@ -60,7 +60,7 @@ function setTodayMode(mode){
 function renderTodayTimeline(lessons,date,now){
  const panel=$('todayTimelinePanel');if(!panel)return;
  if(todayMode!=='timeline')return;
- const min=t=>{const m=/^(\\d{2}):(\\d{2})$/.exec(t||'');if(!m)return NaN;const n=+m[1]*60+(+m[2]);return n>=0&&n<=1440? n:NaN};
+ const min=t=>{const m=/^([0-9]{2}):([0-9]{2})$/.exec(t||'');if(!m)return NaN;const n=+m[1]*60+(+m[2]);return n>=0&&n<1440? n:NaN};
  const format=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
  const events=data.filter(x=>x.type==='event'&&x.date===date);
  const items=[...lessons,...events].map(x=>({...x,_s:min(x.start),_e:min(x.end)})).filter(x=>Number.isFinite(x._s)&&Number.isFinite(x._e)&&x._e>x._s).sort((a,b)=>a._s-b._s||a._e-b._e);
