@@ -186,59 +186,59 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 #cloudConflictPanel .setting-group{margin:10px 0;padding:12px;border:1px solid #dce4d7;border-radius:12px}
 
 /* =========================================================
-   Agenda IPIA TEST 4.9.40 — Crema e Borgogna
+   Agenda IPIA TEST 4.9.41 — Arancio tramonto
    Solo tema UI: non sovrascrive colori personali inline.
    ========================================================= */
 :root{
-  --sand-bg:#FAF7F2;
-  --sand-header:#F0E9E1;
-  --terracotta:#88465B;
-  --terracotta-dark:#642D42;
-  --sage-lesson:#E9EBDD;
-  --peach-event:#F1DBDF;
-  --ink-warm:#46353B;
-  --muted-warm:#76646B;
+  --sand-bg:#FFF8F1;
+  --sand-header:#FFE8D5;
+  --terracotta:#D86B28;
+  --terracotta-dark:#A54C1B;
+  --sage-lesson:#FBE9CC;
+  --peach-event:#F4DAD3;
+  --ink-warm:#45352C;
+  --muted-warm:#806A5C;
   --amber-today:#C58D40;
-  --warm-paper:#FFFDFC;
-  --warm-line:#E7D9DA;
+  --warm-paper:#FFFCF8;
+  --warm-line:#EBD7C5;
   background:var(--sand-bg);
   color:var(--ink-warm);
 }
 body{background:linear-gradient(180deg,var(--sand-header) 0,var(--sand-bg) 290px);color:var(--ink-warm)}
 header h1,h1,h2,h3{color:var(--ink-warm)}
 .muted,.hint,.meta,.note,.setting-empty{color:var(--muted-warm)}
-.summary>div,.setting-group,form,.empty{background:var(--warm-paper);border-color:var(--warm-line);box-shadow:0 4px 16px #6638470a}
+.summary>div,.setting-group,form,.empty{background:var(--warm-paper);border-color:var(--warm-line);box-shadow:0 4px 16px #8C542E0a}
 .summary strong,.time{color:var(--terracotta-dark)}
-.card{border-color:var(--warm-line);box-shadow:0 6px 18px #6638470d}
-.card.personal-lesson{border-color:#D9DFC9}
-.card.personal-lesson::before{background:#9BAE94}
-.card.school-event{border-color:#D9ADB8}
+.card{border-color:var(--warm-line);box-shadow:0 6px 18px #8C542E0d}
+.card.personal-lesson{border-color:#E6DABE}
+.card.personal-lesson::before{background:#C2A46C}
+.card.school-event{border-color:#E3B9A8}
 .card.school-event::before{background:var(--terracotta)}
 .card .time,.card.school-event .time{color:var(--terracotta-dark)}
 .card .meta,.card .note{color:var(--muted-warm)}
-.card .small{background:#FFFDFCD9;color:var(--terracotta-dark)}
+.card .small{background:#FFFCF8D9;color:var(--terracotta-dark)}
 .btn,button{background:var(--sand-header);color:var(--terracotta-dark)}
 .primary,.update-notice button{background:var(--terracotta);color:#fff}
 .primary:hover,.update-notice button:hover{background:var(--terracotta-dark)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline-color:var(--amber-today)}
-.nav{background:var(--warm-paper);border-top-color:var(--warm-line);box-shadow:0 -4px 18px #66384708}
+.nav{background:var(--warm-paper);border-top-color:var(--warm-line);box-shadow:0 -4px 18px #8C542E08}
 .nav button{color:var(--muted-warm)}
 .nav button.active{background:var(--sand-header);color:var(--terracotta-dark)}
 .chip{background:var(--sand-header);color:var(--terracotta-dark)}
-input,select,textarea{background:var(--warm-paper);border-color:#DED0D2;color:var(--ink-warm)}
-input::placeholder,textarea::placeholder{color:#88767A}
-.setup-message{background:#F5E9EB;color:var(--terracotta-dark);border-color:#DAC4C9}
+input,select,textarea{background:var(--warm-paper);border-color:#E1CABB;color:var(--ink-warm)}
+input::placeholder,textarea::placeholder{color:#967663}
+.setup-message{background:#FFF0E3;color:var(--terracotta-dark);border-color:#E9C5AC}
 .week-scroll{background:var(--warm-paper);border-color:var(--warm-line)}
 .week-table th{background:var(--sand-header);color:var(--terracotta-dark)}
-.week-table th:first-child,.week-table td:first-child{background:#F5ECED;color:var(--ink-warm)}
-.week-table td{background:#F9F3F0}
+.week-table th:first-child,.week-table td:first-child{background:#FFF0E3;color:var(--ink-warm)}
+.week-table td{background:#FFF7ED}
 .week-time,.week-room{color:var(--muted-warm)}
-.week-empty{color:#AC9B9E}
+.week-empty{color:#B8A28E}
 .week-lesson{color:var(--ink-warm)}
 .week-table th.week-today-top,.week-table td.week-today-cell{box-shadow:inset 2px 0 var(--amber-today),inset -2px 0 var(--amber-today)}
 .week-table th.week-today-top{border-top-color:var(--amber-today)}
 .week-table td.week-today-bottom{border-bottom-color:var(--amber-today)}
-.today-label{background:#FDF1DA;color:#79521A;border-color:#E8D09B}
+.today-label{background:#FFF0D6;color:#7E481E;border-color:#E9C792}
 .update-notice{background:var(--warm-paper);border-color:var(--warm-line)}
 .update-notice p{color:var(--muted-warm)}
 #settings .settings-panel{border-color:var(--warm-line);background:var(--warm-paper)}
