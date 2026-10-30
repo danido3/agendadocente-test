@@ -1,7 +1,7 @@
 {
-  "name": "Agenda IPIA",
-  "short_name": "Agenda IPIA",
-  "description": "Planner scolastico per docenti",
+  "name": "Agenda IPIA TEST",
+  "short_name": "Agenda TEST",
+  "description": "Agenda IPIA TEST · base ufficiale 4.9.38",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

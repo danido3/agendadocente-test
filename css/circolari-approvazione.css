@@ -1,7 +1,0 @@
-
-/* Proposte circolari — solo versione TEST */
-.circular-proposal { margin: 10px 0; border: 1px solid #e2d5b4; padding: 12px; }
-.circular-proposal .content { width: 100%; min-width: 0; }
-.circular-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-.circular-actions button { min-height: 40px; }
-#circularProposals { margin: 18px 0 24px; }
