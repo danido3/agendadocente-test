@@ -1,9 +1,21 @@
-const CACHE='agenda-ipia-v4-9-38';
+const CACHE='agenda-ipia-test-v4-9-43';
 const ASSETS=['./','./index.html','./css/styles.css','./js/app.js','./js/firebase-auth.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('agenda-ipia-v')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('agenda-ipia-test-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting()});
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;
 const url=new URL(e.request.url);
 if(url.pathname.endsWith('/version.json')){e.respondWith(fetch(e.request,{cache:'no-store'}));return}
 e.respondWith(fetch(e.request).then(r=>{if(r.ok&&(e.request.mode==='navigate'||ASSETS.some(a=>url.pathname.endsWith('/'+a.replace('./',''))))){const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy)).catch(()=>{})}return r}).catch(()=>caches.match(e.request)))});
+
+/* FCM background messages, same registered service worker as the PWA. */
+importScripts('https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging-compat.js');
+firebase.initializeApp({
+ apiKey:'AIzaSyBhGhWO4S1kwkncXXSb6k-hfgM99V7lQ9w',
+ authDomain:'agenda-ipia.firebaseapp.com',
+ projectId:'agenda-ipia',
+ messagingSenderId:'505492164166',
+ appId:'1:505492164166:web:513e9e96d49d77dabd4447'
+});
+firebase.messaging();
