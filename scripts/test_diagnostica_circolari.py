@@ -74,7 +74,7 @@ class PersonalRulesTest(unittest.TestCase):
         for title,cat in [('Convocazione GLO PEI','glo'),('Calendario scrutini finali','scrutini'),('Assemblea d’Istituto corso diurno','assemblea_diurna'),('Nomina coordinatori consigli di classe',None)]:
             self.assertEqual(categoria(title),cat)
         self.assertEqual(classi_in('12 A MAT 4 B MATA 2 B MAT'),[])
-        self.assertEqual(classi_in('2ª A MAT e 4B MAT'),['2 A MAT','4 B MAT'])
+        self.assertEqual(classi_in('2^A MAT e 4^ B MAT'),['2 A MAT','4 B MAT'])
 
     def test_glo_privacy_multiple_events_and_rectification(self):
         import json

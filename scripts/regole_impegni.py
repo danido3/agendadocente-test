@@ -4,7 +4,7 @@ from estrai_riunioni_generali import dates_all, RANGE
 from proposte_circolare_92 import extract_nearby_schedule
 CLASSI=('2 A MAT','4 A MAT','4 B MAT')
 def classi_in(text):
-    text=text.upper().replace('ª','').replace('°','')
+    text=text.upper().replace('ª','').replace('°','').replace('^','').replace('º','')
     return [c for c in CLASSI if re.search(r'(?<![A-Z0-9])'+c.replace(' ',r'\s*')+r'(?![A-Z0-9])',text)]
 def categoria(title):
     t=title.lower()
