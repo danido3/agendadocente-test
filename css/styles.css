@@ -184,21 +184,3 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 #resolveCloudConflicts[hidden]{display:none!important}
 #cloudConflictPanel pre{font-size:12px;max-height:220px;overflow:auto}
 #cloudConflictPanel .setting-group{margin:10px 0;padding:12px;border:1px solid #dce4d7;border-radius:12px}
-
-/* Timeline giornaliera TEST 4.9.39 */
-#todayListPanel[hidden],#todayTimelinePanel[hidden]{display:none!important}
-.today-mode-switch{display:flex;gap:4px;max-width:350px;padding:4px;margin:14px 0 16px;border-radius:12px;background:#eaf0f5}
-.today-mode-switch button{flex:1;padding:10px 12px;border:0;border-radius:9px;background:transparent;color:#53677a;font:inherit;font-size:14px;font-weight:700}
-.today-mode-switch button.active{background:white;color:#214f9a;box-shadow:0 1px 4px #00000015}
-#todayTimelinePanel{display:flex;flex-direction:column;gap:9px;padding-bottom:20px}
-.timeline-entry{width:100%;display:flex;align-items:stretch;gap:12px;text-align:left;border:1px solid #cfd9e4;border-left:4px solid #8ba6ad;background:var(--timeline-color,#eaf2fc);border-radius:12px;padding:12px 13px;color:#1b2f47;font:inherit;cursor:pointer;overflow-wrap:anywhere}
-.timeline-event{border-left-color:#d2a04f}
-.timeline-active{outline:2px solid #d2a04f;outline-offset:1px}
-.timeline-time{width:50px;flex:none;font-size:14px;font-weight:750;font-variant-numeric:tabular-nums}
-.timeline-time small{display:block;margin-top:4px;font-size:12px;font-weight:500}
-.timeline-content{display:flex;flex:1;flex-direction:column;justify-content:center;gap:5px;min-width:0}
-.timeline-content strong{font-size:15px}.timeline-content small{font-size:12px}
-.timeline-overlap{color:#a04821;font-weight:700}.timeline-current{color:#235e46;font-weight:700}
-.timeline-gap{display:flex;justify-content:space-between;gap:10px;padding:12px 15px 12px 68px;border-left:2px dashed #ced8e3;margin-left:22px;color:#65778a;font-size:12px}
-.timeline-now{display:flex;align-items:center;gap:10px;color:#9b4c19;font-size:12px;font-weight:750}.timeline-now span{width:51px;text-align:right;font-variant-numeric:tabular-nums}.timeline-now i{height:2px;flex:1;background:#d2a04f}.timeline-now strong{font-size:12px}
-@media(max-width:380px){.timeline-entry{gap:8px;padding:10px}.timeline-time{width:45px}.timeline-gap{padding-left:58px}}
