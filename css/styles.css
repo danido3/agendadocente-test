@@ -432,3 +432,32 @@ input::placeholder,textarea::placeholder{color:#89726B}
 #monthGrid .month-day.selected .lesson-dot{background:#FFFFFF}
 #monthGrid .month-day.selected .event-dot{background:#F9DACD!important}
 #monthGrid .month-day:focus-visible{outline:3px solid #894328;outline-offset:2px}
+
+/* TEST 4.9.50 — menu compatto flottante per le azioni delle schede */
+.card .actions .card-menu-trigger{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;min-width:36px;min-height:36px;
+  padding:0;border-radius:10px;border:1px solid #E0D4CA;
+  background:#FFFFFFE8;color:#894328;font-size:26px;font-weight:800;
+  line-height:1;letter-spacing:1px;
+}
+.card .actions .card-menu-trigger[aria-expanded="true"]{background:#EFDED4;border-color:#B9653E}
+.card .actions .card-menu-trigger:focus-visible{outline:3px solid #B9653E;outline-offset:2px}
+.card-action-popup{
+  position:fixed;z-index:9999;
+  border:1px solid #DEC9BA;border-radius:14px;
+  padding:6px;background:#FFFFFF;
+  box-shadow:0 12px 32px #3E241F33;
+  display:flex;flex-direction:column;gap:2px;
+}
+.card-action-popup[hidden]{display:none!important}
+.card-action-popup button{
+  display:flex;align-items:center;gap:12px;
+  width:100%;min-height:44px;text-align:left;padding:10px 12px;
+  background:transparent;border-radius:9px;color:#332E2B;
+  font-size:14px;font-weight:650;
+}
+.card-action-popup button span{font-size:19px;color:#894328;display:inline-flex;justify-content:center;width:24px;flex:none}
+.card-action-popup button:hover,.card-action-popup button:focus-visible{background:#F7ECE5}
+.card-action-popup button.menu-danger{color:#A73B50;background:#FFF1F1}
+.card-action-popup button.menu-danger span{color:#A73B50}
