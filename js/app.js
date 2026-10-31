@@ -209,7 +209,61 @@ document.addEventListener('keydown',e=>{
 window.addEventListener('scroll',()=>{if(!cardMenuPopup.hidden)closeCardMenu()},{passive:true,capture:true});
 window.addEventListener('resize',()=>{if(!cardMenuPopup.hidden)closeCardMenu()});
 
-function toggleFields(){const lesson=$('type').value==='lesson';$('weeklyFields').style.display=lesson?'block':'none';$('dateFields').style.display=lesson?'none':'block';$('date').required=!lesson;$('subjectLabel').textContent=lesson?'Materia':'Impegno';$('subjectLabel').htmlFor=lesson?'lessonSubject':'subject';$('lessonSubject').style.display=lesson?'block':'none';$('customLessonSubject').style.display=lesson&&$('lessonSubject').value==='__custom__'?'block':'none';$('customLessonSubject').required=lesson&&$('lessonSubject').value==='__custom__';$('customLessonClass').style.display=lesson&&$('lessonClass').value==='__custom__'?'block':'none';$('customLessonClass').required=lesson&&$('lessonClass').value==='__custom__';$('subject').style.display=lesson?'none':'block';$('subject').required=!lesson;$('customCommitment').required=!lesson&&$('subject').value==='__custom__';$('lessonClass').style.display=lesson?'block':'none';$('classroom').style.display=lesson?'none':'block';refreshTimes()};function openForm(id){editing=null;$('entryForm').reset();populateChoices();setRoom('');setEventClass('');setCommitment('');$('customLessonSubject').value='';$('customLessonClass').value='';$('presetNote').value='';setTime('start','08:20');setTime('end','09:20');$('date').value=localDate();$('day').value=String(new Date().getDay()||1);$('formHeading').textContent='Nuova voce';toggleFields();toggleCustomLessonSubject();toggleCustomLessonClass();navigate('editor')};function setSelectChoice(id,value){const el=$(id);if(value&&!Array.from(el.options).some(o=>o.value===value))el.add(new Option(value+' (già usato)',value));if(value)el.value=value}function editEntry(id){const x=data.find(x=>x.id===id);if(!x)return;editing=id;for(const k of ['type','day','date','classroom','note'])$(k).value=x[k]||'';populateChoices();setEventClass(x.classroom||'');setRoom(x.room||'');setLessonChoice('lessonClass','customLessonClass',x.type==='lesson'?x.classroom:'');setCommitment(x.type==='event'?x.subject||'':'');setLessonChoice('lessonSubject','customLessonSubject',x.type==='lesson'?x.subject:'');$('presetNote').value=config.notes.includes(x.note)?x.note:'';$('formHeading').textContent='Modifica voce';toggleFields();setTime('start',x.start);setTime('end',x.end);navigate('editor')};function conflictsFor(x){
+
+/* TEST 4.9.53 — editor compatto: gruppi e riepilogo, stesso salvataggio */
+function selectEntryEditorTab(group){
+ const allowed=['basic','time','place','notes'];
+ if(!allowed.includes(group))return;
+ document.querySelectorAll('#entryForm [data-editor-group]').forEach(el=>{el.hidden=el.dataset.editorGroup!==group});
+ document.querySelectorAll('#entryForm [data-editor-tab]').forEach(btn=>{
+  const active=btn.dataset.editorTab===group;
+  btn.classList.toggle('active',active);
+  btn.setAttribute('aria-pressed',String(active));
+ });
+}
+function setCompactEntryType(type){
+ if(!['lesson','event'].includes(type))return;
+ $('type').value=type;
+ toggleFields();
+ updateCompactEntryEditor();
+}
+function updateCompactEntryEditor(){
+ const lesson=$('type').value==='lesson';
+ document.querySelectorAll('#entryForm [data-entry-kind]').forEach(btn=>{
+  const active=btn.dataset.entryKind===(lesson?'lesson':'event');
+  btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active));
+ });
+ const heading=$('entryBasicHeading');if(heading)heading.textContent=lesson?'Materia':'Tipo di impegno';
+ const chosen=(id,customId)=>$(id).value==='__custom__'?$(customId).value:($(id).selectedOptions[0]?.textContent||$(id).value);
+ const subject=chosen(lesson?'lessonSubject':'subject',lesson?'customLessonSubject':'customCommitment');
+ const classroom=chosen(lesson?'lessonClass':'classroom',lesson?'customLessonClass':'customClass');
+ const room=chosen('room','customRoom');
+ const date=$('date').value;
+ const day=($('day').selectedOptions[0]?.textContent||'');
+ const time=$('start').value+'–'+$('end').value;
+ const summary=$('entrySummary');
+ if(!summary)return;
+ $('entrySummarySubject').textContent=subject&&subject!=='Altro (scrivi)'?subject:'Attività da specificare';
+ $('entrySummaryWhen').textContent=(lesson?'Ogni '+day:date||'Data da definire')+' · '+time;
+ $('entrySummaryWhere').textContent=[classroom&&classroom!=='Altro (scrivi)'?classroom:'',room&&room!=='Altro (scrivi)'?room:''].filter(Boolean).join(' · ')||'Nessuna aula o classe indicata';
+ $('entrySummaryNote').textContent=$('note').value?'✎ '+$('note').value:'';
+ summary.hidden=!$('showEntrySummary').checked;
+}
+document.getElementById('entryFormTabs').addEventListener('click',event=>{
+ const tab=event.target.closest('[data-editor-tab]');
+ if(tab)selectEntryEditorTab(tab.dataset.editorTab);
+});
+document.getElementById('entryForm').addEventListener('click',event=>{
+ const btn=event.target.closest('button[data-entry-kind]');
+ if(btn)setCompactEntryType(btn.dataset.entryKind);
+});
+document.getElementById('entryForm').addEventListener('input',updateCompactEntryEditor);
+document.getElementById('entryForm').addEventListener('change',updateCompactEntryEditor);
+document.getElementById('entryForm').addEventListener('invalid',event=>{
+ const group=event.target.closest('[data-editor-group]');
+ if(group)selectEntryEditorTab(group.dataset.editorGroup);
+},true);
+function toggleFields(){const lesson=$('type').value==='lesson';$('weeklyFields').style.display=lesson?'block':'none';$('dateFields').style.display=lesson?'none':'block';$('date').required=!lesson;$('subjectLabel').textContent=lesson?'Materia':'Impegno';$('subjectLabel').htmlFor=lesson?'lessonSubject':'subject';$('lessonSubject').style.display=lesson?'block':'none';$('customLessonSubject').style.display=lesson&&$('lessonSubject').value==='__custom__'?'block':'none';$('customLessonSubject').required=lesson&&$('lessonSubject').value==='__custom__';$('customLessonClass').style.display=lesson&&$('lessonClass').value==='__custom__'?'block':'none';$('customLessonClass').required=lesson&&$('lessonClass').value==='__custom__';$('subject').style.display=lesson?'none':'block';$('subject').required=!lesson;$('customCommitment').required=!lesson&&$('subject').value==='__custom__';$('lessonClass').style.display=lesson?'block':'none';$('classroom').style.display=lesson?'none':'block';refreshTimes()};function openForm(id){editing=null;$('entryForm').reset();populateChoices();setRoom('');setEventClass('');setCommitment('');$('customLessonSubject').value='';$('customLessonClass').value='';$('presetNote').value='';setTime('start','08:20');setTime('end','09:20');$('date').value=localDate();$('day').value=String(new Date().getDay()||1);$('formHeading').textContent='Nuova voce';toggleFields();toggleCustomLessonSubject();toggleCustomLessonClass();navigate('editor');selectEntryEditorTab('basic');updateCompactEntryEditor()};function setSelectChoice(id,value){const el=$(id);if(value&&!Array.from(el.options).some(o=>o.value===value))el.add(new Option(value+' (già usato)',value));if(value)el.value=value}function editEntry(id){const x=data.find(x=>x.id===id);if(!x)return;editing=id;for(const k of ['type','day','date','classroom','note'])$(k).value=x[k]||'';populateChoices();setEventClass(x.classroom||'');setRoom(x.room||'');setLessonChoice('lessonClass','customLessonClass',x.type==='lesson'?x.classroom:'');setCommitment(x.type==='event'?x.subject||'':'');setLessonChoice('lessonSubject','customLessonSubject',x.type==='lesson'?x.subject:'');$('presetNote').value=config.notes.includes(x.note)?x.note:'';$('formHeading').textContent='Modifica voce';toggleFields();setTime('start',x.start);setTime('end',x.end);navigate('editor');selectEntryEditorTab('basic');updateCompactEntryEditor()};function conflictsFor(x){
  const overlaps=y=>x.start<y.end&&y.start<x.end;
  return data.filter(y=>y.id!==x.id&&overlaps(y)&&(
   x.type==='event'?(y.type==='event'&&y.date===x.date||y.type==='lesson'&&!closureFor(x.date)&&Number(y.day)===new Date(x.date+'T12:00:00').getDay()):
@@ -307,7 +361,7 @@ window.agendaCloudImport=function(x){
  data=x.entries;config=normalizeConfig(x.personalization);closures=normalizeClosures(x.closures);
  populateChoices();renderSettings();renderClosures();render();renderBackupList();
 };
-const APP_VERSION='4.9.52';
+const APP_VERSION='4.9.53';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
