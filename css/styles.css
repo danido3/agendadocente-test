@@ -546,3 +546,34 @@ input::placeholder,textarea::placeholder{color:#89726B}
  #settings .settings-category-nav{gap:5px}
  #settings .settings-category-nav button.settings-category{padding:8px 10px;font-size:12px}
 }
+
+/* TEST 4.9.53 — modulo compatto per lezioni e impegni */
+#editor #entryForm{background:transparent;border:0;box-shadow:none;padding:0}
+#editor #formHeading{color:#332E2B;font-size:23px;margin:16px 0 14px}
+#editor .editor-native-kind{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#editor .editor-kind{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:5px;background:#EFDED4;border-radius:15px;margin:0 0 15px}
+#editor .editor-kind-button{min-width:0;min-height:48px;padding:10px 5px;border-radius:11px;background:transparent;color:#894328;font-size:13px;font-weight:750}
+#editor .editor-kind-button.active{background:#B9653E;color:#FFFFFF}
+#editor .editor-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 0 5px;margin:0 0 13px}
+#editor .editor-tabs::-webkit-scrollbar{display:none}
+#editor .editor-tab{white-space:nowrap;flex:none;background:#F4EAE3;color:#894328;border:1px solid #E7D3C5;border-radius:999px;min-height:38px;padding:8px 11px;font-size:12px;font-weight:700}
+#editor .editor-tab.active{background:#B9653E;border-color:#B9653E;color:#FFFFFF}
+#editor .editor-group{background:#FFFFFF;border:1px solid #E6D9CF;border-radius:16px;padding:15px 13px 17px;margin:0 0 15px}
+#editor .editor-group[hidden]{display:none!important}
+#editor .editor-group h3{display:flex;gap:9px;align-items:center;color:#332E2B;font-size:16px;font-weight:750;margin:0 0 14px}
+#editor .editor-group-icon{display:inline-grid;place-items:center;min-width:33px;height:33px;border-radius:10px;background:#F4E7DC;color:#894328;font-size:18px}
+#editor .editor-optional{margin-left:auto;color:#87736B;font-size:12px;font-weight:500}
+#editor .editor-group label{color:#6A5D57;font-weight:650}
+#editor .editor-group select,#editor .editor-group input{border-color:#D9C2B6;border-radius:11px;background:#FFFFFF;min-height:43px}
+#editor .editor-summary-toggle{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0 9px}
+#editor .editor-summary-toggle label{margin:0;font-size:13px;color:#332E2B}
+#editor .editor-summary-toggle input{width:20px;height:20px;flex:none;accent-color:#B9653E}
+#editor .editor-summary{padding:13px;border:1px solid #D5C2B6;border-left:4px solid #B9653E;border-radius:12px;background:#F8EEE8;color:#332E2B;margin:0 0 14px}
+#editor .editor-summary[hidden]{display:none!important}
+#editor .editor-summary strong{display:block;font-size:17px}
+#editor .editor-summary-detail{font-size:13px;margin-top:4px;color:#6A5D57;overflow-wrap:anywhere}
+#editor .editor-summary-detail:empty{display:none}
+#editor .editor-footer{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+#editor .editor-footer button{min-height:46px}
+#editor .editor-footer .primary{background:#B9653E;color:#FFFFFF}
+@media(max-width:390px){#editor .editor-kind-button{font-size:12px}#editor .editor-group{padding:12px 10px 15px}}
