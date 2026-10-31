@@ -245,3 +245,74 @@ input::placeholder,textarea::placeholder{color:#967663}
 #cloudConflictPanel .setting-group{border-color:var(--warm-line)}
 /* Le schede ricevono colori da impostazioni e stili inline,
    intenzionalmente non imponiamo un background globale alle card. */
+
+/* Agenda IPIA TEST 4.9.42 — schede impegni compatte in Oggi e Impegni.
+   Le schede lezioni e i colori personali restano invariati. */
+#todayExtras .card.school-event,
+#commitmentList .card.school-event{
+  gap:9px;
+  padding:9px 10px;
+  margin:6px 0;
+  border-radius:13px;
+  align-items:center;
+}
+#todayExtras .card.school-event .time,
+#commitmentList .card.school-event .time{
+  min-width:48px;
+  width:48px;
+  font-size:12px;
+  line-height:1.4;
+  font-variant-numeric:tabular-nums;
+}
+#todayExtras .card.school-event .content,
+#commitmentList .card.school-event .content{min-width:0}
+#todayExtras .card.school-event .content strong,
+#commitmentList .card.school-event .content strong{
+  font-size:14px;
+  line-height:1.25;
+  font-weight:750;
+}
+#todayExtras .card.school-event .meta,
+#commitmentList .card.school-event .meta{
+  font-size:12px;
+  margin-top:3px;
+  line-height:1.3;
+}
+#todayExtras .card.school-event .note,
+#commitmentList .card.school-event .note{
+  font-size:12px;
+  margin-top:4px;
+  line-height:1.3;
+}
+#todayExtras .card.school-event .today-label,
+#commitmentList .card.school-event .today-label{
+  font-size:10px;
+  padding:2px 5px;
+  margin-bottom:3px;
+}
+#todayExtras .card.school-event .actions,
+#commitmentList .card.school-event .actions{
+  flex:none;
+  gap:3px;
+  align-items:center;
+}
+#todayExtras .card.school-event .actions .small,
+#commitmentList .card.school-event .actions .small{
+  padding:7px 6px;
+  font-size:13px;
+  border-radius:8px;
+  min-width:28px;
+  min-height:32px;
+}
+#todayExtras .card.school-event .inline-activity,
+#commitmentList .card.school-event .inline-activity{
+  margin-top:5px;
+}
+@media(max-width:390px){
+  #todayExtras .card.school-event,
+  #commitmentList .card.school-event{gap:6px;padding:8px 7px}
+  #todayExtras .card.school-event .time,
+  #commitmentList .card.school-event .time{min-width:43px;width:43px;font-size:11px}
+  #todayExtras .card.school-event .actions .small,
+  #commitmentList .card.school-event .actions .small{padding:6px 5px;min-width:26px}
+}
