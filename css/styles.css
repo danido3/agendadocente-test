@@ -391,3 +391,13 @@ input::placeholder,textarea::placeholder{color:#89726B}
 .preset-swatch{background:var(--swatch);border:2px solid #98887F;border-radius:10px;width:34px;height:34px;min-width:34px;min-height:34px;padding:0;display:inline-flex;align-items:center;justify-content:center;color:#25312A;font-size:17px;font-weight:800;box-shadow:0 1px 3px #34261d1a}
 .preset-swatch.selected{border:3px solid #894328;box-shadow:0 0 0 2px #fff,0 0 0 4px #894328}
 .preset-swatch:focus-visible{outline:3px solid #894328;outline-offset:3px}
+
+/* TEST 4.9.48 — intestazioni Linea rame */
+#today .today-section-heading,#commitmentList .today-section-heading,#monthDayTitle{display:flex;align-items:center;gap:9px;flex-wrap:wrap;color:var(--ink-warm);padding:4px 0 4px 12px;border-left:4px solid var(--terracotta);min-height:28px;line-height:1.35}
+#today .today-section-heading::after,#commitmentList .today-section-heading::after,#monthDayTitle::after{content:"";flex:1 1 20px;height:1px;background:#DFCDC3;margin-left:4px}
+#today .today-section-count,#commitmentList .today-section-count{font-size:12px;font-weight:750;line-height:1.3;color:var(--terracotta-dark);background:var(--sand-header);border-radius:999px;padding:3px 8px;white-space:nowrap}
+#today .today-section-count[hidden],#commitmentList .today-section-count[hidden]{display:none!important}
+#todayExtras .section-date-label,#commitmentList .section-date-label{display:flex;align-items:center;gap:8px;margin:18px 0 8px;padding:3px 0 3px 10px;border-left:3px solid var(--terracotta);color:var(--ink-warm);font-size:13px;font-weight:700;text-transform:capitalize}
+#todayExtras .section-date-label::after,#commitmentList .section-date-label::after{content:"";flex:1;height:1px;background:#DFCDC3}
+#monthDayTitle{margin:15px 0 10px;font-size:17px}
+@media(max-width:390px){#today .today-section-heading,#commitmentList .today-section-heading,#monthDayTitle{gap:6px;padding-left:9px}}
