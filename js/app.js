@@ -30,7 +30,7 @@ if(!localStorage.getItem(CONFIG_KEY)&&data.some(x=>x.type==='lesson')){
  config.classes=classes.map(name=>({name,color:previousClassColors[name]||'#dcebff'}));
  beforeAgendaChange();localStorage.setItem(CONFIG_KEY,JSON.stringify(config));
 }
-const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function save(){beforeAgendaChange();localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new Event('agenda-local-changed'));render()};function navigate(page){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));$('heading').textContent=({today:'Oggi',week:'Settimana',commitments:'Impegni',month:'Mese',settings:'Impostazioni',editor:'Modifica agenda'})[page];window.scrollTo(0,0);if(page==='settings'){renderSettings();renderBackupList();}if(page!=='editor')render()};function card(x,highlightToday=false,showActivity=false){const now=new Date(),today=localDate(),minute=now.getHours()*60+now.getMinutes(),toMin=t=>{const [h,m]=String(t).split(':').map(Number);return h*60+m},active=showActivity&&(x.type==='lesson'||x.date===today)&&toMin(x.start)<=minute&&minute<toMin(x.end),progress=active?Math.max(0,Math.min(100,Math.round(100*(minute-toMin(x.start))/(toMin(x.end)-toMin(x.start))))):0;const activityMarkup=active?`<div class="inline-activity"><span>◷ In corso · ${toMin(x.end)-minute} min rimanenti</span><div class="inline-progress"><div style="width:${progress}%"></div></div></div>`:'';const todayEvent=x.type==='event'&&highlightToday;const style=x.type==='lesson'?styleColor(findColor('subjects',x.subject,'#eaf2fc')):'background:#F4D8D4;border-color:'+(todayEvent?'#A73B50':'#DCA8AB')+';--today-border:#A73B50';return `<div class="card ${x.type==='lesson'?'personal-lesson':'school-event'}${todayEvent?' event-today':''}" style="${style}"><div class="time">${safe(x.start)}<br>${safe(x.end)}</div><div class="content">${todayEvent?'<span class="today-label">OGGI</span>':''}<strong>${safe(x.subject)}</strong>${x.classroom||x.room?`<div class="meta">${x.classroom?(x.type==='lesson'?'<span class="class-badge" style="'+styleColor(findColor('classes',x.classroom,'#eaf2fc'))+'">'+safe(x.classroom)+'</span>':'Classe '+safe(x.classroom)):''}${x.classroom&&x.room?' · ':''}${x.room?safe(x.room):''}</div>`:''}${x.note?`<div class="note">✎ ${safe(x.note)}</div>`:''}${activityMarkup}</div><div class="actions"><button class="small" data-action="edit" data-id="${safe(x.id)}" aria-label="Modifica">✎</button><button class="small" data-action="duplicate" data-id="${safe(x.id)}" aria-label="Duplica" title="Duplica">⧉</button><button class="small danger" data-action="remove" data-id="${safe(x.id)}" aria-label="Elimina">×</button></div></div>`};function list(a,showActivity=false){return a.length?a.sort((x,y)=>x.start.localeCompare(y.start)).map(x=>card(x,false,showActivity)).join(''):'<div class="empty">Nessuna voce inserita.</div>'};function lessonHours(entry){
+const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function save(){beforeAgendaChange();localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new Event('agenda-local-changed'));render()};function navigate(page){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));$('heading').textContent=({today:'Oggi',week:'Settimana',commitments:'Impegni',month:'Mese',settings:'Impostazioni',editor:'Modifica agenda'})[page];window.scrollTo(0,0);if(page==='settings'){renderSettings();renderBackupList();}if(page!=='editor')render()};function card(x,highlightToday=false,showActivity=false){const now=new Date(),today=localDate(),minute=now.getHours()*60+now.getMinutes(),toMin=t=>{const [h,m]=String(t).split(':').map(Number);return h*60+m},active=showActivity&&(x.type==='lesson'||x.date===today)&&toMin(x.start)<=minute&&minute<toMin(x.end),progress=active?Math.max(0,Math.min(100,Math.round(100*(minute-toMin(x.start))/(toMin(x.end)-toMin(x.start))))):0;const activityMarkup=active?`<div class="inline-activity"><span>◷ In corso · ${toMin(x.end)-minute} min rimanenti</span><div class="inline-progress"><div style="width:${progress}%"></div></div></div>`:'';const todayEvent=x.type==='event'&&highlightToday;const style=x.type==='lesson'?styleColor(findColor('subjects',x.subject,'#eaf2fc')):'background:#F4D8D4;border-color:'+(todayEvent?'#A73B50':'#DCA8AB')+';--today-border:#A73B50';return `<div class="card ${x.type==='lesson'?'personal-lesson':'school-event'}${todayEvent?' event-today':''}" style="${style}"><div class="time">${safe(x.start)}<br>${safe(x.end)}</div><div class="content">${todayEvent?'<span class="today-label">OGGI</span>':''}<strong>${safe(x.subject)}</strong>${x.classroom||x.room?`<div class="meta">${x.classroom?(x.type==='lesson'?'<span class="class-badge" style="'+styleColor(findColor('classes',x.classroom,'#eaf2fc'))+'">'+safe(x.classroom)+'</span>':'Classe '+safe(x.classroom)):''}${x.classroom&&x.room?' · ':''}${x.room?safe(x.room):''}</div>`:''}${x.note?`<div class="note">✎ ${safe(x.note)}</div>`:''}${activityMarkup}</div><div class="actions"><button type="button" class="card-menu-trigger" data-menu-id="${safe(x.id)}" aria-label="Azioni per ${safe(x.subject)}" aria-haspopup="menu" aria-expanded="false" title="Azioni">⋯</button></div></div>`};function list(a,showActivity=false){return a.length?a.sort((x,y)=>x.start.localeCompare(y.start)).map(x=>card(x,false,showActivity)).join(''):'<div class="empty">Nessuna voce inserita.</div>'};function lessonHours(entry){
  const toMinutes=t=>{const m=/^(\d{2}):(\d{2})$/.exec(t||'');return m?Number(m[1])*60+Number(m[2]):NaN};
  const minutes=toMinutes(entry.end)-toMinutes(entry.start);
  return Number.isFinite(minutes)&&minutes>0?minutes/60:0;
@@ -127,7 +127,75 @@ function renderWeekTable(){
 }
 function xEnd(x){return x.end||''}
 $('weekList').addEventListener('click',e=>{const b=e.target.closest('[data-entry-id]');if(b)editEntry(b.dataset.entryId)});
-document.addEventListener('click',e=>{const b=e.target.closest('button[data-action][data-id]');if(!b)return;const id=b.dataset.id;if(b.dataset.action==='edit')editEntry(id);else if(b.dataset.action==='duplicate')duplicateEntry(id);else if(b.dataset.action==='remove')removeEntry(id)});
+/* TEST 4.9.50 — un solo menu azioni accessibile, sovrapposto fuori dalle card */
+let openCardMenuId=null;
+let openCardMenuTrigger=null;
+const cardMenuPopup=document.createElement('div');
+cardMenuPopup.className='card-action-popup';
+cardMenuPopup.id='cardActionPopup';
+cardMenuPopup.setAttribute('role','menu');
+cardMenuPopup.setAttribute('aria-label','Azioni attività');
+cardMenuPopup.hidden=true;
+cardMenuPopup.innerHTML='<button type="button" role="menuitem" data-card-command="edit"><span aria-hidden="true">✎</span> Modifica</button><button type="button" role="menuitem" data-card-command="duplicate"><span aria-hidden="true">⧉</span> Duplica</button><button type="button" role="menuitem" class="menu-danger" data-card-command="remove"><span aria-hidden="true">×</span> Elimina</button>';
+document.body.appendChild(cardMenuPopup);
+function closeCardMenu(returnFocus=false){
+ const trigger=openCardMenuTrigger;
+ if(trigger&&trigger.isConnected)trigger.setAttribute('aria-expanded','false');
+ cardMenuPopup.hidden=true;
+ openCardMenuId=null;
+ openCardMenuTrigger=null;
+ if(returnFocus&&trigger&&trigger.isConnected)trigger.focus();
+}
+function positionCardMenu(){
+ if(cardMenuPopup.hidden||!openCardMenuTrigger||!openCardMenuTrigger.isConnected){closeCardMenu();return}
+ const rect=openCardMenuTrigger.getBoundingClientRect();
+ const w=Math.min(226,window.innerWidth-24);
+ cardMenuPopup.style.width=w+'px';
+ const h=cardMenuPopup.offsetHeight;
+ let left=Math.max(12,Math.min(rect.right-w,window.innerWidth-w-12));
+ let top=rect.bottom+7;
+ if(top+h>window.innerHeight-12)top=rect.top-h-7;
+ top=Math.max(12,Math.min(top,window.innerHeight-h-12));
+ cardMenuPopup.style.left=left+'px';
+ cardMenuPopup.style.top=top+'px';
+}
+document.addEventListener('click',e=>{
+ const trigger=e.target.closest('button[data-menu-id]');
+ if(trigger){
+  const id=trigger.dataset.menuId;
+  if(openCardMenuId===id&&openCardMenuTrigger===trigger){closeCardMenu();return}
+  closeCardMenu();
+  openCardMenuId=id;openCardMenuTrigger=trigger;
+  trigger.setAttribute('aria-expanded','true');
+  cardMenuPopup.hidden=false;
+  positionCardMenu();
+  return;
+ }
+ const command=e.target.closest('#cardActionPopup [data-card-command]');
+ if(command&&openCardMenuId){
+  const id=openCardMenuId,action=command.dataset.cardCommand;
+  closeCardMenu();
+  if(action==='edit')editEntry(id);
+  else if(action==='duplicate')duplicateEntry(id);
+  else if(action==='remove')removeEntry(id);
+  return;
+ }
+ if(!e.target.closest('#cardActionPopup'))closeCardMenu();
+});
+document.addEventListener('keydown',e=>{
+ if(cardMenuPopup.hidden)return;
+ if(e.key==='Escape'){e.preventDefault();closeCardMenu(true);return}
+ if(e.key==='Tab'){closeCardMenu();return}
+ if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+  const buttons=Array.from(cardMenuPopup.querySelectorAll('button'));
+  const idx=buttons.indexOf(document.activeElement);
+  const next=e.key==='ArrowDown'?(idx+1)%buttons.length:(idx+buttons.length-1)%buttons.length;
+  e.preventDefault();buttons[next].focus();
+ }
+});
+window.addEventListener('scroll',()=>{if(!cardMenuPopup.hidden)closeCardMenu()},{passive:true,capture:true});
+window.addEventListener('resize',()=>{if(!cardMenuPopup.hidden)closeCardMenu()});
+
 function toggleFields(){const lesson=$('type').value==='lesson';$('weeklyFields').style.display=lesson?'block':'none';$('dateFields').style.display=lesson?'none':'block';$('date').required=!lesson;$('subjectLabel').textContent=lesson?'Materia':'Impegno';$('subjectLabel').htmlFor=lesson?'lessonSubject':'subject';$('lessonSubject').style.display=lesson?'block':'none';$('customLessonSubject').style.display=lesson&&$('lessonSubject').value==='__custom__'?'block':'none';$('customLessonSubject').required=lesson&&$('lessonSubject').value==='__custom__';$('customLessonClass').style.display=lesson&&$('lessonClass').value==='__custom__'?'block':'none';$('customLessonClass').required=lesson&&$('lessonClass').value==='__custom__';$('subject').style.display=lesson?'none':'block';$('subject').required=!lesson;$('customCommitment').required=!lesson&&$('subject').value==='__custom__';$('lessonClass').style.display=lesson?'block':'none';$('classroom').style.display=lesson?'none':'block';refreshTimes()};function openForm(id){editing=null;$('entryForm').reset();populateChoices();setRoom('');setEventClass('');setCommitment('');$('customLessonSubject').value='';$('customLessonClass').value='';$('presetNote').value='';setTime('start','08:20');setTime('end','09:20');$('date').value=localDate();$('day').value=String(new Date().getDay()||1);$('formHeading').textContent='Nuova voce';toggleFields();toggleCustomLessonSubject();toggleCustomLessonClass();navigate('editor')};function setSelectChoice(id,value){const el=$(id);if(value&&!Array.from(el.options).some(o=>o.value===value))el.add(new Option(value+' (già usato)',value));if(value)el.value=value}function editEntry(id){const x=data.find(x=>x.id===id);if(!x)return;editing=id;for(const k of ['type','day','date','classroom','note'])$(k).value=x[k]||'';populateChoices();setEventClass(x.classroom||'');setRoom(x.room||'');setLessonChoice('lessonClass','customLessonClass',x.type==='lesson'?x.classroom:'');setCommitment(x.type==='event'?x.subject||'':'');setLessonChoice('lessonSubject','customLessonSubject',x.type==='lesson'?x.subject:'');$('presetNote').value=config.notes.includes(x.note)?x.note:'';$('formHeading').textContent='Modifica voce';toggleFields();setTime('start',x.start);setTime('end',x.end);navigate('editor')};function conflictsFor(x){
  const overlaps=y=>x.start<y.end&&y.start<x.end;
  return data.filter(y=>y.id!==x.id&&overlaps(y)&&(
@@ -226,7 +294,7 @@ window.agendaCloudImport=function(x){
  data=x.entries;config=normalizeConfig(x.personalization);closures=normalizeClosures(x.closures);
  populateChoices();renderSettings();renderClosures();render();renderBackupList();
 };
-const APP_VERSION='4.9.49';
+const APP_VERSION='4.9.50';
 let latestAppVersion=null;const versionLabel=$('appVersionLabel');if(versionLabel)versionLabel.textContent=APP_VERSION+' TEST';
 function versionParts(v){return String(v).split('.').map(x=>Number(x)||0)}
 function newerVersion(a,b){const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)>(bb[i]||0)}return false}
