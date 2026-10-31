@@ -316,3 +316,72 @@ input::placeholder,textarea::placeholder{color:#73836E}
   #todayExtras .card.school-event .actions .small,
   #commitmentList .card.school-event .actions .small{padding:6px 5px;min-width:26px}
 }
+
+/* Agenda IPIA TEST 4.9.45 — stesse schede compatte per lezioni Oggi
+   e per lezioni/impegni del giorno selezionato sotto il calendario Mese.
+   Non modifica il calendario né i colori personali inline. */
+#todayLessons .card.personal-lesson,
+#monthEntries .card{
+  gap:9px;
+  padding:9px 10px;
+  margin:6px 0;
+  border-radius:13px;
+  align-items:center;
+}
+#todayLessons .card.personal-lesson .time,
+#monthEntries .card .time{
+  min-width:48px;
+  width:48px;
+  font-size:13px;
+  line-height:1.4;
+  font-variant-numeric:tabular-nums;
+}
+#todayLessons .card.personal-lesson .content,
+#monthEntries .card .content{min-width:0}
+#todayLessons .card.personal-lesson .content strong,
+#monthEntries .card .content strong{
+  font-size:17px;
+  line-height:1.25;
+  font-weight:750;
+}
+#todayLessons .card.personal-lesson .meta,
+#monthEntries .card .meta{
+  font-size:13px;
+  margin-top:3px;
+  line-height:1.3;
+}
+#todayLessons .card.personal-lesson .note,
+#monthEntries .card .note{
+  font-size:13px;
+  margin-top:4px;
+  line-height:1.3;
+}
+#monthEntries .card .today-label{
+  font-size:11px;
+  padding:2px 5px;
+  margin-bottom:3px;
+}
+#todayLessons .card.personal-lesson .actions,
+#monthEntries .card .actions{
+  flex:none;
+  gap:3px;
+  align-items:center;
+}
+#todayLessons .card.personal-lesson .actions .small,
+#monthEntries .card .actions .small{
+  padding:7px 6px;
+  font-size:12px;
+  border-radius:8px;
+  min-width:28px;
+  min-height:32px;
+}
+#todayLessons .card.personal-lesson .inline-activity,
+#monthEntries .card .inline-activity{margin-top:5px}
+@media(max-width:390px){
+  #todayLessons .card.personal-lesson,
+  #monthEntries .card{gap:6px;padding:8px 7px}
+  #todayLessons .card.personal-lesson .time,
+  #monthEntries .card .time{min-width:49px;width:49px;font-size:13px}
+  #todayLessons .card.personal-lesson .actions .small,
+  #monthEntries .card .actions .small{padding:6px 5px;min-width:26px}
+}
