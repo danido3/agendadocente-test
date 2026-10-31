@@ -186,59 +186,59 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 #cloudConflictPanel .setting-group{margin:10px 0;padding:12px;border:1px solid #dce4d7;border-radius:12px}
 
 /* =========================================================
-   Agenda IPIA TEST 4.9.41 — Arancio tramonto
+   Agenda IPIA TEST 4.9.44 — Verde bosco
    Solo tema UI: non sovrascrive colori personali inline.
    ========================================================= */
 :root{
-  --sand-bg:#FFF8F1;
-  --sand-header:#FFE8D5;
-  --terracotta:#D86B28;
-  --terracotta-dark:#A54C1B;
-  --sage-lesson:#FBE9CC;
-  --peach-event:#F4DAD3;
-  --ink-warm:#45352C;
-  --muted-warm:#806A5C;
+  --sand-bg:#F6F8F3;
+  --sand-header:#DCE5D3;
+  --terracotta:#355C3C;
+  --terracotta-dark:#23442D;
+  --sage-lesson:#DDE9D9;
+  --peach-event:#F5E1CF;
+  --ink-warm:#29382B;
+  --muted-warm:#607060;
   --amber-today:#C58D40;
-  --warm-paper:#FFFCF8;
-  --warm-line:#EBD7C5;
+  --warm-paper:#FFFFFF;
+  --warm-line:#C7D7C4;
   background:var(--sand-bg);
   color:var(--ink-warm);
 }
 body{background:linear-gradient(180deg,var(--sand-header) 0,var(--sand-bg) 290px);color:var(--ink-warm)}
 header h1,h1,h2,h3{color:var(--ink-warm)}
 .muted,.hint,.meta,.note,.setting-empty{color:var(--muted-warm)}
-.summary>div,.setting-group,form,.empty{background:var(--warm-paper);border-color:var(--warm-line);box-shadow:0 4px 16px #8C542E0a}
+.summary>div,.setting-group,form,.empty{background:var(--warm-paper);border-color:var(--warm-line);box-shadow:0 4px 16px #3A593D0a}
 .summary strong,.time{color:var(--terracotta-dark)}
-.card{border-color:var(--warm-line);box-shadow:0 6px 18px #8C542E0d}
-.card.personal-lesson{border-color:#E6DABE}
-.card.personal-lesson::before{background:#C2A46C}
-.card.school-event{border-color:#E3B9A8}
+.card{border-color:var(--warm-line);box-shadow:0 6px 18px #3A593D0d}
+.card.personal-lesson{border-color:#ACC3A8}
+.card.personal-lesson::before{background:#688B65}
+.card.school-event{border-color:#D4AE92}
 .card.school-event::before{background:var(--terracotta)}
 .card .time,.card.school-event .time{color:var(--terracotta-dark)}
 .card .meta,.card .note{color:var(--muted-warm)}
-.card .small{background:#FFFCF8D9;color:var(--terracotta-dark)}
+.card .small{background:#FFFFFFD9;color:var(--terracotta-dark)}
 .btn,button{background:var(--sand-header);color:var(--terracotta-dark)}
 .primary,.update-notice button{background:var(--terracotta);color:#fff}
 .primary:hover,.update-notice button:hover{background:var(--terracotta-dark)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline-color:var(--amber-today)}
-.nav{background:var(--warm-paper);border-top-color:var(--warm-line);box-shadow:0 -4px 18px #8C542E08}
+.nav{background:var(--warm-paper);border-top-color:var(--warm-line);box-shadow:0 -4px 18px #3A593D08}
 .nav button{color:var(--muted-warm)}
 .nav button.active{background:var(--sand-header);color:var(--terracotta-dark)}
 .chip{background:var(--sand-header);color:var(--terracotta-dark)}
-input,select,textarea{background:var(--warm-paper);border-color:#E1CABB;color:var(--ink-warm)}
-input::placeholder,textarea::placeholder{color:#967663}
-.setup-message{background:#FFF0E3;color:var(--terracotta-dark);border-color:#E9C5AC}
+input,select,textarea{background:var(--warm-paper);border-color:#C5D3BE;color:var(--ink-warm)}
+input::placeholder,textarea::placeholder{color:#73836E}
+.setup-message{background:#EAF1E4;color:var(--terracotta-dark);border-color:#B8CDB3}
 .week-scroll{background:var(--warm-paper);border-color:var(--warm-line)}
 .week-table th{background:var(--sand-header);color:var(--terracotta-dark)}
-.week-table th:first-child,.week-table td:first-child{background:#FFF0E3;color:var(--ink-warm)}
-.week-table td{background:#FFF7ED}
+.week-table th:first-child,.week-table td:first-child{background:#EAF1E4;color:var(--ink-warm)}
+.week-table td{background:#F0F5ED}
 .week-time,.week-room{color:var(--muted-warm)}
-.week-empty{color:#B8A28E}
+.week-empty{color:#8A9B87}
 .week-lesson{color:var(--ink-warm)}
 .week-table th.week-today-top,.week-table td.week-today-cell{box-shadow:inset 2px 0 var(--amber-today),inset -2px 0 var(--amber-today)}
 .week-table th.week-today-top{border-top-color:var(--amber-today)}
 .week-table td.week-today-bottom{border-bottom-color:var(--amber-today)}
-.today-label{background:#FFF0D6;color:#7E481E;border-color:#E9C792}
+.today-label{background:#FFF0CF;color:#70501E;border-color:#D2B979}
 .update-notice{background:var(--warm-paper);border-color:var(--warm-line)}
 .update-notice p{color:var(--muted-warm)}
 #settings .settings-panel{border-color:var(--warm-line);background:var(--warm-paper)}
@@ -246,7 +246,7 @@ input::placeholder,textarea::placeholder{color:#967663}
 /* Le schede ricevono colori da impostazioni e stili inline,
    intenzionalmente non imponiamo un background globale alle card. */
 
-/* Agenda IPIA TEST 4.9.43 — schede impegni compatte in Oggi e Impegni.
+/* Agenda IPIA TEST 4.9.44 — schede impegni compatte in Oggi e Impegni.
    Le schede lezioni e i colori personali restano invariati. */
 #todayExtras .card.school-event,
 #commitmentList .card.school-event{
