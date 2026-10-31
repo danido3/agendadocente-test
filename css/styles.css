@@ -186,33 +186,33 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#8aa
 #cloudConflictPanel .setting-group{margin:10px 0;padding:12px;border:1px solid #dce4d7;border-radius:12px}
 
 /* =========================================================
-   Agenda IPIA TEST 4.9.44 — Verde bosco
+   Agenda IPIA TEST 4.9.46 — Rame e corallo
    Solo tema UI: non sovrascrive colori personali inline.
    ========================================================= */
 :root{
-  --sand-bg:#F6F8F3;
-  --sand-header:#DCE5D3;
-  --terracotta:#355C3C;
-  --terracotta-dark:#23442D;
-  --sage-lesson:#DDE9D9;
-  --peach-event:#F5E1CF;
-  --ink-warm:#29382B;
-  --muted-warm:#607060;
-  --amber-today:#C58D40;
+  --sand-bg:#FBF8F5;
+  --sand-header:#EFDED4;
+  --terracotta:#B9653E;
+  --terracotta-dark:#894328;
+  --sage-lesson:#E3EADD;
+  --peach-event:#F4D8D4;
+  --ink-warm:#332E2B;
+  --muted-warm:#6A5D57;
+  --amber-today:#A73B50;
   --warm-paper:#FFFFFF;
-  --warm-line:#C7D7C4;
+  --warm-line:#E1C9BB;
   background:var(--sand-bg);
   color:var(--ink-warm);
 }
 body{background:linear-gradient(180deg,var(--sand-header) 0,var(--sand-bg) 290px);color:var(--ink-warm)}
 header h1,h1,h2,h3{color:var(--ink-warm)}
 .muted,.hint,.meta,.note,.setting-empty{color:var(--muted-warm)}
-.summary>div,.setting-group,form,.empty{background:var(--warm-paper);border-color:var(--warm-line);box-shadow:0 4px 16px #3A593D0a}
+.summary>div,.setting-group,form,.empty{background:var(--warm-paper);border-color:var(--warm-line);box-shadow:0 4px 16px #8050390a}
 .summary strong,.time{color:var(--terracotta-dark)}
-.card{border-color:var(--warm-line);box-shadow:0 6px 18px #3A593D0d}
-.card.personal-lesson{border-color:#ACC3A8}
-.card.personal-lesson::before{background:#688B65}
-.card.school-event{border-color:#D4AE92}
+.card{border-color:var(--warm-line);box-shadow:0 6px 18px #8050390d}
+.card.personal-lesson{border-color:#C6D3BF}
+.card.personal-lesson::before{background:#8EAA85}
+.card.school-event{border-color:#DCA8AB}
 .card.school-event::before{background:var(--terracotta)}
 .card .time,.card.school-event .time{color:var(--terracotta-dark)}
 .card .meta,.card .note{color:var(--muted-warm)}
@@ -221,19 +221,19 @@ header h1,h1,h2,h3{color:var(--ink-warm)}
 .primary,.update-notice button{background:var(--terracotta);color:#fff}
 .primary:hover,.update-notice button:hover{background:var(--terracotta-dark)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline-color:var(--amber-today)}
-.nav{background:var(--warm-paper);border-top-color:var(--warm-line);box-shadow:0 -4px 18px #3A593D08}
+.nav{background:var(--warm-paper);border-top-color:var(--warm-line);box-shadow:0 -4px 18px #80503908}
 .nav button{color:var(--muted-warm)}
 .nav button.active{background:var(--sand-header);color:var(--terracotta-dark)}
 .chip{background:var(--sand-header);color:var(--terracotta-dark)}
-input,select,textarea{background:var(--warm-paper);border-color:#C5D3BE;color:var(--ink-warm)}
-input::placeholder,textarea::placeholder{color:#73836E}
-.setup-message{background:#EAF1E4;color:var(--terracotta-dark);border-color:#B8CDB3}
+input,select,textarea{background:var(--warm-paper);border-color:#D9C2B6;color:var(--ink-warm)}
+input::placeholder,textarea::placeholder{color:#89726B}
+.setup-message{background:#F8ECE7;color:var(--terracotta-dark);border-color:#E3C7BD}
 .week-scroll{background:var(--warm-paper);border-color:var(--warm-line)}
 .week-table th{background:var(--sand-header);color:var(--terracotta-dark)}
-.week-table th:first-child,.week-table td:first-child{background:#EAF1E4;color:var(--ink-warm)}
-.week-table td{background:#F0F5ED}
+.week-table th:first-child,.week-table td:first-child{background:#F8ECE7;color:var(--ink-warm)}
+.week-table td{background:#F8EEEA}
 .week-time,.week-room{color:var(--muted-warm)}
-.week-empty{color:#8A9B87}
+.week-empty{color:#A89189}
 .week-lesson{color:var(--ink-warm)}
 .week-table th.week-today-top,.week-table td.week-today-cell{box-shadow:inset 2px 0 var(--amber-today),inset -2px 0 var(--amber-today)}
 .week-table th.week-today-top{border-top-color:var(--amber-today)}
