@@ -401,3 +401,34 @@ input::placeholder,textarea::placeholder{color:#89726B}
 #todayExtras .section-date-label::after,#commitmentList .section-date-label::after{content:"";flex:1;height:1px;background:#DFCDC3}
 #monthDayTitle{margin:15px 0 10px;font-size:17px}
 @media(max-width:390px){#today .today-section-heading,#commitmentList .today-section-heading,#monthDayTitle{gap:6px;padding-left:9px}}
+
+/* Agenda IPIA TEST 4.9.49 — calendario mensile Equilibrato.
+   Oggi: bordo corallo; selezionato: sfondo rame; pallini conservati. */
+#monthGrid .month-day{
+  background:#FFFFFF;
+  border:1px solid #EADCD3;
+  border-radius:11px;
+  color:#332E2B;
+}
+#monthGrid .month-day.is-closed:not(.selected){background:#F9E9E5}
+#monthGrid .month-day.is-today:not(.selected){
+  border:2px solid #A73B50;
+  color:#A73B50;
+}
+#monthGrid .month-day.is-today span:first-child{
+  font-weight:800;
+  text-decoration:none;
+}
+#monthGrid .month-day.selected{
+  background:#B9653E;
+  border:2px solid #894328;
+  color:#FFFFFF;
+  font-weight:800;
+}
+#monthGrid .month-day.selected.is-today{
+  outline:2px solid #A73B50;
+  outline-offset:2px;
+}
+#monthGrid .month-day.selected .lesson-dot{background:#FFFFFF}
+#monthGrid .month-day.selected .event-dot{background:#F9DACD!important}
+#monthGrid .month-day:focus-visible{outline:3px solid #894328;outline-offset:2px}
