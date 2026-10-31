@@ -1,4 +1,4 @@
-const CACHE='agenda-ipia-test-v4-9-48-linea-rame-20261031';
+const CACHE='agenda-ipia-test-v4-9-49-calendario-equilibrato-20261031';
 const ASSETS=['./','./index.html','./css/styles.css','./js/app.js','./js/firebase-auth.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('agenda-ipia-test-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
