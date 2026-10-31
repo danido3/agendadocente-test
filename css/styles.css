@@ -461,3 +461,38 @@ input::placeholder,textarea::placeholder{color:#89726B}
 .card-action-popup button:hover,.card-action-popup button:focus-visible{background:#F7ECE5}
 .card-action-popup button.menu-danger{color:#A73B50;background:#FFF1F1}
 .card-action-popup button.menu-danger span{color:#A73B50}
+
+/* Agenda IPIA TEST 4.9.51 — Schede Minimal: angoli 13px,
+   niente ombre, barretta interna; densità, font e popup invariati. */
+.card{
+  border-radius:13px;
+  border-width:2px;
+  border-style:solid;
+  box-shadow:none;
+}
+.card::before{
+  left:7px;
+  top:8px;
+  bottom:8px;
+  width:4px;
+  border-radius:999px;
+}
+.card.personal-lesson::before{background:#84A080}
+.card.school-event::before{background:#B9653E}
+.card.school-event.event-today::before{background:#A73B50}
+#todayLessons .card.personal-lesson,
+#todayExtras .card.school-event,
+#monthEntries .card,
+#commitmentList .card.school-event{
+  border-radius:13px;
+  box-shadow:none;
+  padding-left:17px;
+}
+@media(max-width:390px){
+  #todayLessons .card.personal-lesson,
+  #todayExtras .card.school-event,
+  #monthEntries .card,
+  #commitmentList .card.school-event{
+    padding-left:15px;
+  }
+}
