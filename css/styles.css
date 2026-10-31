@@ -496,3 +496,53 @@ input::placeholder,textarea::placeholder{color:#89726B}
     padding-left:15px;
   }
 }
+
+/* Agenda IPIA TEST 4.9.52 — Impostazioni: schede moderne */
+#settings>h2{font-size:24px;letter-spacing:-.4px;color:#332E2B;margin:16px 0 18px}
+#settings>.settings-panel{
+  margin:12px 0 14px;
+  background:#FFFFFF;border:1px solid #E6D9CF;
+  border-radius:17px;box-shadow:0 3px 12px #5E362A0C;
+  overflow:hidden;
+}
+#settings>.settings-panel[open]{border:2px solid #B9653E;box-shadow:0 4px 18px #5E362A12}
+#settings>.settings-panel>summary{padding:15px 14px;gap:12px;min-height:71px}
+#settings>.settings-panel>summary strong{font-size:16px;line-height:1.3;color:#332E2B}
+#settings>.settings-panel>summary small{font-size:12px;color:#75675F;line-height:1.4;margin-top:4px}
+#settings>.settings-panel>summary .settings-symbol{
+  width:43px;height:43px;flex:0 0 43px;
+  border-radius:12px;background:#F6EEE7;color:#894328;
+  font-size:23px;display:grid;place-items:center;
+}
+#settings>.settings-panel[open]>summary .settings-symbol{background:#EFDED4}
+#settings>.settings-panel>summary::after{color:#894328}
+#settings>.settings-panel>.settings-panel-body{background:#FFFCFA;border-top:1px solid #E6D9CF;padding:14px 13px 18px}
+#settings .settings-subpanel{background:#FFFFFF;border:1px solid #E6D9CF;border-radius:12px;margin:10px 0}
+#settings .settings-subpanel>summary{color:#332E2B;font-weight:700;padding:13px}
+#settings .settings-subpanel[open]{border-color:#C9AB98}
+#settings .settings-subpanel>.settings-panel-body{background:#FFFCFA;border-top:1px solid #E6D9CF}
+#settings .settings-panel-body .setting-group{border-color:#E6D9CF;border-radius:13px}
+#settings .settings-category-nav{
+  display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 12px;
+}
+#settings .settings-category-nav button.settings-category{
+  background:#F4EAE3;color:#894328;
+  border:1px solid #E7D3C5;border-radius:999px;
+  font-size:12px;font-weight:700;
+  padding:9px 12px;margin:0;min-height:38px;
+}
+#settings .settings-category-nav button.settings-category.active{
+  background:#B9653E;border-color:#B9653E;color:#FFFFFF;
+}
+#settings .settings-category-nav button.settings-category:focus-visible{
+  outline:3px solid #894328;outline-offset:2px;
+}
+#settings .settings-category-content[hidden]{display:none!important}
+#settings .settings-category-content{margin-top:6px;background:#FFFFFF}
+#settings .settings-category-content h3{color:#332E2B;font-size:16px;margin-bottom:11px}
+@media(max-width:390px){
+ #settings>.settings-panel>summary{padding:13px 10px;gap:9px}
+ #settings>.settings-panel>.settings-panel-body{padding:11px 10px 15px}
+ #settings .settings-category-nav{gap:5px}
+ #settings .settings-category-nav button.settings-category{padding:8px 10px;font-size:12px}
+}
