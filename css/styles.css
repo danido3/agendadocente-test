@@ -385,3 +385,9 @@ input::placeholder,textarea::placeholder{color:#89726B}
   #todayLessons .card.personal-lesson .actions .small,
   #monthEntries .card .actions .small{padding:6px 5px;min-width:26px}
 }
+
+/* TEST 4.9.47 — palette facoltative per materie e classi */
+.preset-colors{display:flex;flex-wrap:wrap;gap:8px;margin:-1px 0 13px 0;padding:0 2px 1px}
+.preset-swatch{background:var(--swatch);border:2px solid #98887F;border-radius:10px;width:34px;height:34px;min-width:34px;min-height:34px;padding:0;display:inline-flex;align-items:center;justify-content:center;color:#25312A;font-size:17px;font-weight:800;box-shadow:0 1px 3px #34261d1a}
+.preset-swatch.selected{border:3px solid #894328;box-shadow:0 0 0 2px #fff,0 0 0 4px #894328}
+.preset-swatch:focus-visible{outline:3px solid #894328;outline-offset:3px}
